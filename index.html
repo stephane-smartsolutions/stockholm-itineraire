@@ -103,8 +103,12 @@
   .pop-badge.resto{background:var(--resto)} .pop-badge.hotel{background:var(--hotel)}
   .pop-title{font-weight:700;font-size:15px;margin-bottom:2px}
   .pop-desc{color:#5a6a68;font-size:12.5px;margin-bottom:8px}
+  .pop-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
   .pop-go{display:inline-block;background:var(--teal);color:#fff!important;padding:6px 11px;border-radius:6px;
           font-size:13px;font-weight:600;text-decoration:none!important}
+  .pop-map{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--teal);color:var(--teal)!important;
+           padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none!important;background:#fff}
+  .pop-map:hover{background:#eef6f5}
 
   @media (max-width:620px){
     header.hero h1{font-size:24px}
@@ -120,7 +124,7 @@
     <h1>Stockholm — Itinéraire 3 jours</h1>
     <div class="sub">Gamla Stan · Djurgården · Södermalm — musées, restaurants et hôtel.
       Carte interactive : cliquez un marqueur pour rejoindre l'étape dans l'itinéraire. Restaurants en 🍴 rouge, hôtel en 🏨 bleu.</div>
-    <div class="credit">Base : « Itinéraire de 3 jours à Stockholm.pdf » (Perplexity Computer, 17 juillet 2026) · Carte + hôtel + tables suédoises ajoutés sur OpenStreetMap</div>
+    <div class="credit">Gamla Stan · Djurgården · Södermalm · carte OpenStreetMap — un lien officiel pour chaque lieu, restaurant et l'hôtel.</div>
   </div>
 </header>
 
@@ -402,9 +406,9 @@
   </table>
   </div>
 
-  <!-- ================= AJOUTS — CUISINE SUÉDOISE ================= -->
-  <h2 class="day" style="color:var(--resto)">Plus de cuisine suédoise — nos suggestions</h2>
-  <p class="daysub">Tables traditionnelles (husmanskost) ajoutées à la carte, dans les quartiers de l'itinéraire.</p>
+  <!-- ================= CUISINE SUÉDOISE ================= -->
+  <h2 class="day" style="color:var(--resto)">Autres tables de cuisine suédoise</h2>
+  <p class="daysub">Tables traditionnelles (husmanskost), réparties dans les quartiers de l'itinéraire.</p>
 
   <div class="card resto" id="freden" data-poi="freden">
     <div class="time glyph">🍴</div>
@@ -460,7 +464,6 @@
 </main>
 
 <footer>
-  Itinéraire généré le 17 juillet 2026 — hôtel et tables suédoises ajoutés le 19 juillet 2026.<br>
   Positions des marqueurs approximatives (± quelques dizaines de mètres), à titre d'orientation. Fond cartographique : © OpenStreetMap contributors.
 </footer>
 
@@ -491,7 +494,7 @@ const POIS = [
   {id:"ulla-winbladh",cat:"resto",lat:59.3270,lng:18.0958,name:"Ulla Winbladh",desc:"Djurgården · dîner (Jour 2)"},
   {id:"ostermalms-saluhall",cat:"resto",lat:59.3356,lng:18.0742,name:"Östermalms Saluhall",desc:"Östermalm · déjeuner (Jour 3)"},
   {id:"meatballs",cat:"resto",lat:59.3138,lng:18.0796,name:"Meatballs for the People",desc:"Södermalm · boulettes"},
-  // Tables suédoises ajoutées
+  // Autres tables de cuisine suédoise
   {id:"freden",cat:"resto",extra:true,lat:59.3228,lng:18.0728,name:"Den Gyldene Freden",desc:"Gamla Stan · husmanskost (1722)"},
   {id:"kvarnen",cat:"resto",extra:true,lat:59.3149,lng:18.0748,name:"Kvarnen",desc:"Södermalm · husmanskost (1908)"},
   {id:"prinsen",cat:"resto",extra:true,lat:59.3344,lng:18.0705,name:"Prinsen",desc:"Norrmalm · husmanskost (1897)"},
@@ -508,8 +511,11 @@ function iconHtml(p){
 }
 function badgeOf(p){
   if(p.cat==="hotel") return ["hotel","Hôtel"];
-  if(p.cat==="resto") return ["resto", p.extra?"Restaurant suédois (ajout)":"Restaurant"];
+  if(p.cat==="resto") return ["resto","Restaurant"];
   return ["j"+p.day,"Jour "+p.day];
+}
+function gmapsUrl(p){
+  return "https://www.google.com/maps/search/"+encodeURIComponent(p.name+" Stockholm")+"/@"+p.lat+","+p.lng+",16z";
 }
 function chipIcon(p){
   if(p.cat==="hotel") return {bg:"var(--hotel)",txt:"🏨"};
@@ -529,7 +535,10 @@ POIS.forEach(p=>{
     `<div class="pop-badge ${b[0]}">${b[1]}</div>`+
     `<div class="pop-title">${p.name}</div>`+
     `<div class="pop-desc">${p.desc}</div>`+
-    `<a class="pop-go" href="#" data-goto="${p.id}">Voir dans l'itinéraire ▸</a>`
+    `<div class="pop-actions">`+
+      `<a class="pop-go" href="#" data-goto="${p.id}">Voir dans l'itinéraire ▸</a>`+
+      `<a class="pop-map" href="${gmapsUrl(p)}" target="_blank" rel="noopener">Voir sur Google Maps ↗</a>`+
+    `</div>`
   );
   markers[p.id]=m; bounds.push([p.lat,p.lng]);
 });
