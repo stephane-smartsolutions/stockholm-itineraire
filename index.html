@@ -10,7 +10,7 @@
   :root{
     --bg:#f4f3ef; --ink:#1d2b2b; --muted:#6b7876; --line:#e2ddd4;
     --teal:#0e5a5e; --teal-dark:#0b4649;
-    --j1:#0e6b6b; --j2:#c8621b; --j3:#7b3fa0; --resto:#b3283b; --hotel:#1b3a5b;
+    --j1:#0e6b6b; --j2:#c8621b; --j3:#7b3fa0; --resto:#b3283b; --hotel:#1b3a5b; --opt:#8a8f8d;
     --card:#ffffff;
   }
   *{box-sizing:border-box}
@@ -42,7 +42,7 @@
   .maplegend .hint{margin-left:auto;font-style:italic}
   .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
   .d1{background:var(--j1)} .d2{background:var(--j2)} .d3{background:var(--j3)}
-  .dresto{background:var(--resto)} .dhotel{background:var(--hotel)}
+  .dresto{background:var(--resto)} .dhotel{background:var(--hotel)} .dopt{background:var(--opt)}
 
   /* Poignée de redimensionnement */
   .gutter{flex:0 0 8px;cursor:col-resize;background:var(--line);position:relative;touch-action:none}
@@ -85,7 +85,7 @@
   .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
         border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:14px}
   .card.j1{border-left-color:var(--j1)} .card.j2{border-left-color:var(--j2)} .card.j3{border-left-color:var(--j3)}
-  .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)}
+  .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)} .card.opt{border-left-color:var(--opt)}
   .time{color:var(--teal);font-weight:600;font-size:14.5px;font-variant-numeric:tabular-nums}
   .time.glyph{font-size:22px}
   .card .body{min-width:0}
@@ -101,11 +101,19 @@
   @keyframes flash{0%{background:#fff4d6}60%{background:#fff9ea}100%{background:var(--card)}}
   .flash{animation:flash 1.8s ease-out}
 
+  /* Encadré budget / pass */
+  .passbox{background:#fff7ee;border:1px solid #eccfa8;border-left:4px solid var(--j2);border-radius:8px;
+           padding:16px 18px;margin:16px 0}
+  .passbox h3{margin:0 0 8px;font-size:17px;color:#8a4b12}
+  .passbox table{margin:10px 0 6px}
+  .passbox .verdict{font-weight:700;color:#8a4b12}
+
   /* Tables */
   table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;background:#fff;
         border:1px solid var(--line);border-radius:8px;overflow:hidden}
   th{background:var(--teal);color:#eaf5f4;text-align:left;padding:9px 12px;font-weight:600;font-size:13.5px}
   td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   tr:nth-child(even) td{background:#faf9f6}
   .tablewrap{overflow-x:auto}
 
@@ -120,11 +128,11 @@
          color:#fff;font-style:normal;font-weight:700;font-size:12px;z-index:2;line-height:1}
   .pin i.emo{font-size:13px}
   .pin.j1 b{background:var(--j1)} .pin.j2 b{background:var(--j2)} .pin.j3 b{background:var(--j3)}
-  .pin.resto b{background:var(--resto)} .pin.hotel b{background:var(--hotel)}
+  .pin.resto b{background:var(--resto)} .pin.hotel b{background:var(--hotel)} .pin.opt b{background:var(--opt)}
   .leaflet-popup-content{margin:11px 13px;font-size:14px}
   .pop-badge{display:inline-block;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;margin-bottom:5px}
   .pop-badge.j1{background:var(--j1)} .pop-badge.j2{background:var(--j2)} .pop-badge.j3{background:var(--j3)}
-  .pop-badge.resto{background:var(--resto)} .pop-badge.hotel{background:var(--hotel)}
+  .pop-badge.resto{background:var(--resto)} .pop-badge.hotel{background:var(--hotel)} .pop-badge.opt{background:var(--opt)}
   .pop-title{font-weight:700;font-size:15px;margin-bottom:2px}
   .pop-desc{color:#5a6a68;font-size:12.5px;margin-bottom:8px}
   .pop-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -164,6 +172,7 @@
       <span><i class="dot d3"></i>Jour 3 · Södermalm</span>
       <span><i class="dot dresto"></i>🍴 Restaurant</span>
       <span><i class="dot dhotel"></i>🏨 Hôtel</span>
+      <span><i class="dot dopt"></i>＋ Optionnel</span>
       <span class="hint">Marqueur → « Voir dans l'itinéraire »</span>
     </div>
   </section>
@@ -173,11 +182,32 @@
   <main class="content" id="content">
    <div class="content-inner">
 
-    <div class="pageintro">Gamla Stan · Djurgården · Södermalm — musées, restaurants et hôtel.
-      Cliquez un marqueur pour rejoindre l'étape ; <span class="k">🍴 = restaurant</span>, <span class="k">🏨 = hôtel</span>.
-      Un lien officiel pour chaque lieu.</div>
+    <div class="pageintro">Gamla Stan · Djurgården · Södermalm — programme ajusté aux horaires :
+      <span class="k">Jour 1 dès 14h</span>, <span class="k">Jours 2–3 dès 11h</span>.
+      Attractions prioritaires retenues ; les autres figurent en <span class="k">＋ Optionnel</span>.
+      Cliquez un marqueur pour rejoindre l'étape ; 🍴 = restaurant, 🏨 = hôtel.</div>
 
     <div class="chips" id="chips"></div>
+
+    <!-- ================= PASS GO CITY ================= -->
+    <div class="passbox">
+      <h3>Faut-il le pass Go City ? Pour ce programme : non</h3>
+      <p>Pour <strong>2 adultes + 1 jeune de 17 ans</strong> (chez Go City, 16 ans et + = tarif adulte), le pass 3 jours revient à
+        <strong>1 699 SEK/adulte</strong>, soit <strong>5 097 SEK</strong>. Avec ce programme resserré (moins de visites), les
+        billets individuels reviennent <strong>moins cher</strong> :</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th>2 adultes + 1 jeune (17 ans)</th><th>Total</th><th>vs pass (5 097)</th></tr></thead>
+        <tbody>
+          <tr><td>Pass Go City 3 jours</td><td class="num">5 097 SEK</td><td class="num">—</td></tr>
+          <tr><td>Billets à la carte — attractions retenues</td><td class="num">≈ 4 004 SEK</td><td class="num">−1 093 SEK</td></tr>
+          <tr><td>Billets à la carte — avec la croisière</td><td class="num">≈ 4 904 SEK</td><td class="num">−193 SEK</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="verdict">→ Achetez les billets individuellement : le pass n'est pas rentabilisé sur ce programme.</p>
+      <p style="font-size:13px;color:var(--muted);margin:6px 0 0">Tarifs adultes été 2026. Le jeune de 17 ans (âge prouvé au passeport) est gratuit à Vasa, Nobel et Storkyrkan et à tarif réduit au Palais Royal, mais paie le plein tarif adulte à Skansen, ABBA et Fotografiska (pas de tarif jeune par âge, pas de carte étudiant). Ces gratuités sont déjà intégrées au total à la carte ci-dessus.</p>
+    </div>
 
     <section class="intro">
       <h2>Avant de partir — transports et pass utiles</h2>
@@ -186,8 +216,8 @@
         (Arlanda ↔ Centralstationen en 18 min) ou navette
         <a href="https://www.flygbussarna.se/" target="_blank" rel="noopener">Flygbussarna</a>.
         En ville : <a href="https://sl.se/" target="_blank" rel="noopener">SL</a> (métro, bus, tram, bacs dont le bac de Djurgården).
-        Pass : <a href="https://gocity.com/stockholm" target="_blank" rel="noopener">Go City — Stockholm Pass</a>.
-        Croisières : <a href="https://www.stromma.com/" target="_blank" rel="noopener">Strömma</a>.</p>
+        Croisières : <a href="https://www.stromma.com/" target="_blank" rel="noopener">Strömma</a>.
+        Pass : <a href="https://gocity.com/stockholm" target="_blank" rel="noopener">Go City — Stockholm Pass</a> (voir l'encadré ci-dessus).</p>
     </section>
 
     <!-- ================= HÔTEL ================= -->
@@ -196,81 +226,45 @@
       <div class="time glyph">🏨</div>
       <div class="body">
         <div class="cardhead"><h4>Radisson Blu Waterfront Hotel</h4><span class="mapjump" data-goto="hotel">voir sur la carte</span></div>
-        <p>Votre lieu de séjour — Nils Ericsons Plan 4, 111 64 Stockholm. Accolé à la gare centrale (Centralstationen) et au terminal de bus Cityterminalen : Arlanda Express, bus et point de départ idéal vers Gamla Stan, Djurgården et Drottningholm.</p>
+        <p>Votre lieu de séjour — Nils Ericsons Plan 4, 111 64 Stockholm. Accolé à la gare centrale (Centralstationen) et au terminal de bus Cityterminalen : Arlanda Express, bus et point de départ idéal vers Gamla Stan, Djurgården et Södermalm.</p>
         <div class="links"><a href="https://www.radissonhotels.com/en-us/hotels/radisson-blu-stockholm" target="_blank" rel="noopener">Site officiel de l'hôtel</a></div>
       </div>
     </div>
 
     <!-- ================= JOUR 1 ================= -->
-    <h2 class="day">Jour 1 — Gamla Stan &amp; Stockholm royal</h2>
+    <h2 class="day">Jour 1 — dès 14h — Gamla Stan &amp; croisière</h2>
     <p class="daysub">Vieille ville, palais royal et croisière au coucher du soleil</p>
-    <p class="move">Déplacements : SL (métro/bus) pour rejoindre Kungsholmen puis Gamla Stan à pied.</p>
-
-    <div class="card j1" id="stadshuset" data-poi="stadshuset">
-      <div class="time">09:00</div>
-      <div class="body">
-        <div class="cardhead"><h4>Stockholm City Hall (Stadshuset)</h4><span class="mapjump" data-goto="stadshuset">voir sur la carte</span></div>
-        <p>Visite guidée obligatoire des salons d'apparat (Salle Bleue, Salle d'Or) où se tient le banquet du Prix Nobel. Départs toutes les 30 min.</p>
-        <div class="links"><a href="https://stadshuset.stockholm/" target="_blank" rel="noopener">Billets &amp; visites guidées</a></div>
-      </div>
-    </div>
-
-    <div class="card j1" data-poi="_trajet1">
-      <div class="time">10:30</div>
-      <div class="body">
-        <div class="cardhead"><h4>Trajet vers Gamla Stan</h4></div>
-        <p>Marche ou bus/métro SL depuis Kungsholmen jusqu'à la vieille ville, environ 20-25 min.</p>
-        <div class="links"><a href="https://sl.se/" target="_blank" rel="noopener">Planificateur de trajet SL</a></div>
-      </div>
-    </div>
+    <p class="move">Arrivée à 14h : métro/à pied jusqu'à Gamla Stan. Journée concentrée sur la vieille ville.</p>
 
     <div class="card j1" id="kungliga-slottet" data-poi="kungliga-slottet">
-      <div class="time">11:00</div>
+      <div class="time">14:00</div>
       <div class="body">
         <div class="cardhead"><h4>Palais Royal (Kungliga Slottet)</h4><span class="mapjump" data-goto="kungliga-slottet">voir sur la carte</span></div>
-        <p>Appartements royaux, Trésor et musée des Trois Couronnes. Relève de la Garde possible selon horaire.</p>
+        <p>Appartements royaux, Trésor et musée des Trois Couronnes. Relève de la Garde possible selon horaire. (Ferme vers 17h — commencez par là.)</p>
         <div class="links"><a href="https://www.kungligaslotten.se/" target="_blank" rel="noopener">Billets &amp; informations</a></div>
       </div>
     </div>
 
-    <div class="card resto" id="under-kastanjen" data-poi="under-kastanjen">
-      <div class="time glyph">🍴</div>
-      <div class="body">
-        <div class="cardhead"><h4>Déjeuner — Under Kastanjen</h4><span class="mapjump" data-goto="under-kastanjen">voir sur la carte</span></div>
-        <p><em>12:45 · Gamla Stan.</em> Café-restaurant traditionnel niché sous un marronnier au cœur de Gamla Stan, cuisine suédoise simple et copieuse.</p>
-        <div class="links"><a href="https://underkastanjen.se/" target="_blank" rel="noopener">Site officiel</a></div>
-      </div>
-    </div>
-
     <div class="card j1" id="storkyrkan" data-poi="storkyrkan">
-      <div class="time">14:00</div>
+      <div class="time">15:45</div>
       <div class="body">
-        <div class="cardhead"><h4>Storkyrkan (Cathédrale de Stockholm)</h4><span class="mapjump" data-goto="storkyrkan">voir sur la carte</span></div>
-        <p>Plus ancienne église de la vieille ville, célèbre pour sa statue de Saint Georges et le dragon.</p>
+        <div class="cardhead"><h4>Storkyrkan (Cathédrale)</h4><span class="mapjump" data-goto="storkyrkan">voir sur la carte</span></div>
+        <p>Arrêt rapide (30 min) à deux pas du palais : plus ancienne église de la vieille ville, statue de Saint Georges et le dragon.</p>
         <div class="links"><a href="https://www.svenskakyrkan.se/stockholmsdomkyrkoforsamling/storkyrkan" target="_blank" rel="noopener">Informations de visite</a></div>
       </div>
     </div>
 
     <div class="card j1" id="nobel-museum" data-poi="nobel-museum">
-      <div class="time">14:45</div>
+      <div class="time">16:15</div>
       <div class="body">
         <div class="cardhead"><h4>Nobel Prize Museum</h4><span class="mapjump" data-goto="nobel-museum">voir sur la carte</span></div>
-        <p>Installé dans l'ancienne Bourse sur Stortorget, retrace l'histoire des lauréats du Prix Nobel.</p>
+        <p>Sur Stortorget, dans l'ancienne Bourse : histoire des lauréats du Prix Nobel.</p>
         <div class="links"><a href="https://nobelprizemuseum.se/" target="_blank" rel="noopener">Billets &amp; horaires</a></div>
       </div>
     </div>
 
-    <div class="card j1" id="riddarholmen" data-poi="riddarholmen">
-      <div class="time">16:15</div>
-      <div class="body">
-        <div class="cardhead"><h4>Riddarholmen Church</h4><span class="mapjump" data-goto="riddarholmen">voir sur la carte</span></div>
-        <p>Nécropole royale suédoise et unique église médiévale conservée de la ville, sur l'îlot voisin de Riddarholmen.</p>
-        <div class="links"><a href="https://www.kungligaslotten.se/riddarholmskyrkan" target="_blank" rel="noopener">Informations de visite</a></div>
-      </div>
-    </div>
-
     <div class="card j1" id="gamla-stan-flanerie" data-poi="gamla-stan-flanerie">
-      <div class="time">17:00</div>
+      <div class="time">17:30</div>
       <div class="body">
         <div class="cardhead"><h4>Flânerie libre dans Gamla Stan</h4><span class="mapjump" data-goto="gamla-stan-flanerie">voir sur la carte</span></div>
         <p>Ruelles pavées, Stortorget, Järntorget et la petite statue du « Garçon de fer » (Iron Boy).</p>
@@ -286,44 +280,26 @@
       </div>
     </div>
 
-    <div class="card resto" id="pelikan" data-poi="pelikan">
+    <div class="card resto" id="under-kastanjen" data-poi="under-kastanjen">
       <div class="time glyph">🍴</div>
       <div class="body">
-        <div class="cardhead"><h4>Dîner — Pelikan</h4><span class="mapjump" data-goto="pelikan">voir sur la carte</span></div>
-        <p><em>20:30 · Södermalm.</em> Institution de Södermalm depuis 1733, spécialiste des boulettes de viande et de la cuisine suédoise traditionnelle.</p>
-        <div class="links"><a href="https://pelikan.se/" target="_blank" rel="noopener">Réserver une table</a></div>
+        <div class="cardhead"><h4>Dîner — Under Kastanjen</h4><span class="mapjump" data-goto="under-kastanjen">voir sur la carte</span></div>
+        <p><em>20:30 · Gamla Stan.</em> Café-restaurant traditionnel sous un marronnier au cœur de la vieille ville, cuisine suédoise simple et copieuse. (Alternative : Pelikan, à Södermalm.)</p>
+        <div class="links"><a href="https://underkastanjen.se/" target="_blank" rel="noopener">Site officiel</a></div>
       </div>
     </div>
 
     <!-- ================= JOUR 2 ================= -->
-    <h2 class="day">Jour 2 — L'île des musées — Djurgården</h2>
-    <p class="daysub">Vasa, ABBA, Skansen et Musée Nordique</p>
-    <p class="move">Déplacements : bac Djurgårdsfärjan (billets SL) depuis Slussen, ou bus 67 / tram 7.</p>
-
-    <div class="card j2" data-poi="_trajet2">
-      <div class="time">09:00</div>
-      <div class="body">
-        <div class="cardhead"><h4>Trajet vers Djurgården</h4></div>
-        <p>Bac Djurgårdsfärjan (billets SL) depuis Slussen, ou bus 67 / tram 7 depuis le centre-ville.</p>
-        <div class="links"><a href="https://sl.se/" target="_blank" rel="noopener">Billets SL (valables sur le bac)</a></div>
-      </div>
-    </div>
+    <h2 class="day">Jour 2 — dès 11h — Djurgården (Vasa, Skansen, ABBA)</h2>
+    <p class="daysub">Les trois incontournables de l'île des musées</p>
+    <p class="move">Déplacements : bac Djurgårdsfärjan (billets SL) depuis Slussen, ou tram 7 depuis le centre-ville.</p>
 
     <div class="card j2" id="vasa" data-poi="vasa">
-      <div class="time">09:30</div>
-      <div class="body">
-        <div class="cardhead"><h4>Vasa Museum</h4><span class="mapjump" data-goto="vasa">voir sur la carte</span></div>
-        <p>Le navire de guerre Vasa, coulé en 1628 et remonté intact en 1961 — le musée le plus visité de Scandinavie.</p>
-        <div class="links"><a href="https://www.vasamuseet.se/" target="_blank" rel="noopener">Billets en ligne</a></div>
-      </div>
-    </div>
-
-    <div class="card j2" id="nordiska" data-poi="nordiska">
       <div class="time">11:30</div>
       <div class="body">
-        <div class="cardhead"><h4>Nordiska Museet (Musée Nordique)</h4><span class="mapjump" data-goto="nordiska">voir sur la carte</span></div>
-        <p>Vie et traditions nordiques du 16e siècle à nos jours, dans un imposant bâtiment de style Renaissance.</p>
-        <div class="links"><a href="https://www.nordiskamuseet.se/" target="_blank" rel="noopener">Billets &amp; tarifs</a></div>
+        <div class="cardhead"><h4>Vasa Museum</h4><span class="mapjump" data-goto="vasa">voir sur la carte</span></div>
+        <p>Le navire de guerre Vasa, coulé en 1628 et remonté intact en 1961 — le musée le plus visité de Scandinavie. Priorité absolue.</p>
+        <div class="links"><a href="https://www.vasamuseet.se/" target="_blank" rel="noopener">Billets en ligne</a></div>
       </div>
     </div>
 
@@ -331,7 +307,7 @@
       <div class="time glyph">🍴</div>
       <div class="body">
         <div class="cardhead"><h4>Déjeuner — Rosendals Trädgård</h4><span class="mapjump" data-goto="rosendals">voir sur la carte</span></div>
-        <p><em>13:00 · Djurgården.</em> Café-jardin biodynamique au cœur du parc de Djurgården, pain et pâtisseries maison, tables en plein air.</p>
+        <p><em>13:00 · Djurgården.</em> Café-jardin biodynamique au cœur du parc, pain et pâtisseries maison, tables en plein air.</p>
         <div class="links"><a href="https://rosendalstradgard.se/" target="_blank" rel="noopener">Site officiel</a></div>
       </div>
     </div>
@@ -340,7 +316,7 @@
       <div class="time">14:30</div>
       <div class="body">
         <div class="cardhead"><h4>Skansen (musée de plein air)</h4><span class="mapjump" data-goto="skansen">voir sur la carte</span></div>
-        <p>Plus ancien musée en plein air du monde : maisons historiques, artisans en costume et zoo nordique.</p>
+        <p>Plus ancien musée en plein air du monde : maisons historiques, artisans en costume et zoo nordique. Prévoyez ~2h30.</p>
         <div class="links"><a href="https://www.skansen.se/" target="_blank" rel="noopener">Billets en ligne</a></div>
       </div>
     </div>
@@ -349,7 +325,7 @@
       <div class="time">17:00</div>
       <div class="body">
         <div class="cardhead"><h4>ABBA The Museum</h4><span class="mapjump" data-goto="abba">voir sur la carte</span></div>
-        <p>Musée interactif dédié au groupe suédois, avec expériences immersives et costumes originaux.</p>
+        <p>Musée interactif dédié au groupe suédois, expériences immersives et costumes originaux. Vérifiez l'heure de dernière entrée.</p>
         <div class="links"><a href="https://abbathemuseum.com/" target="_blank" rel="noopener">Billets &amp; créneaux horaires</a></div>
       </div>
     </div>
@@ -358,30 +334,30 @@
       <div class="time glyph">🍴</div>
       <div class="body">
         <div class="cardhead"><h4>Dîner — Ulla Winbladh</h4><span class="mapjump" data-goto="ulla-winbladh">voir sur la carte</span></div>
-        <p><em>19:00 · Djurgården.</em> Auberge chaleureuse dans le parc de Djurgården, cuisine suédoise classique (boulettes, hareng, saumon).</p>
+        <p><em>19:00 · Djurgården.</em> Auberge chaleureuse dans le parc, cuisine suédoise classique (boulettes, hareng, saumon).</p>
         <div class="links"><a href="https://ullawinbladh.se/" target="_blank" rel="noopener">Site officiel &amp; réservation</a></div>
       </div>
     </div>
 
     <!-- ================= JOUR 3 ================= -->
-    <h2 class="day">Jour 3 — Södermalm, Fotografiska &amp; départ</h2>
-    <p class="daysub">Point de vue, photographie, gastronomie et option château royal</p>
-    <p class="move">Déplacements : à pied dans Södermalm, puis SL ou Strömma pour Drottningholm.</p>
+    <h2 class="day">Jour 3 — dès 11h — Södermalm &amp; départ</h2>
+    <p class="daysub">Point de vue, photographie, gastronomie, puis transfert</p>
+    <p class="move">Déplacements : à pied dans Södermalm ; retour vers l'hôtel/Centralstationen pour le transfert.</p>
 
     <div class="card j3" id="monteliusvagen" data-poi="monteliusvagen">
-      <div class="time">09:00</div>
+      <div class="time">11:00</div>
       <div class="body">
         <div class="cardhead"><h4>Monteliusvägen (point de vue)</h4><span class="mapjump" data-goto="monteliusvagen">voir sur la carte</span></div>
-        <p>Promenade panoramique sur les hauteurs de Södermalm offrant l'une des plus belles vues sur Gamla Stan et le lac Mälaren. Accès libre.</p>
+        <p>Promenade panoramique sur les hauteurs de Södermalm : l'une des plus belles vues sur Gamla Stan et le lac Mälaren. Accès libre.</p>
         <div class="links"><a href="https://www.visitstockholm.com/" target="_blank" rel="noopener">Fiche du site (Visit Stockholm)</a></div>
       </div>
     </div>
 
     <div class="card j3" id="fotografiska" data-poi="fotografiska">
-      <div class="time">10:00</div>
+      <div class="time">11:45</div>
       <div class="body">
         <div class="cardhead"><h4>Fotografiska</h4><span class="mapjump" data-goto="fotografiska">voir sur la carte</span></div>
-        <p>Musée contemporain de la photographie installé dans l'ancienne douane royale de Stadsgårdshamnen.</p>
+        <p>Musée contemporain de la photographie dans l'ancienne douane royale de Stadsgårdshamnen. Ouvre tard — flexible dans la journée.</p>
         <div class="links"><a href="https://www.fotografiska.com/sto/" target="_blank" rel="noopener">Billets &amp; informations</a></div>
       </div>
     </div>
@@ -390,33 +366,24 @@
       <div class="time glyph">🍴</div>
       <div class="body">
         <div class="cardhead"><h4>Déjeuner — Östermalms Saluhall</h4><span class="mapjump" data-goto="ostermalms-saluhall">voir sur la carte</span></div>
-        <p><em>12:30 · Östermalm.</em> Halle gourmande historique (1888) : fruits de mer, charcuteries suédoises et comptoirs à déguster sur place.</p>
+        <p><em>13:30 · Östermalm.</em> Halle gourmande historique (1888) : fruits de mer, charcuteries suédoises et comptoirs à déguster sur place.</p>
         <div class="links"><a href="https://ostermalmshallen.se/" target="_blank" rel="noopener">Site officiel</a></div>
       </div>
     </div>
 
-    <div class="card j3" id="drottningholm" data-poi="drottningholm">
-      <div class="time">14:00</div>
+    <div class="card j3" data-poi="_libre">
+      <div class="time">15:00</div>
       <div class="body">
-        <div class="cardhead"><h4>Option demi-journée : Château de Drottningholm</h4><span class="mapjump" data-goto="drottningholm">voir sur la carte</span></div>
-        <p>Résidence royale classée à l'UNESCO, à 40 minutes du centre par bus ou bateau. Appartements royaux, jardins et théâtre du 18e siècle.</p>
-        <div class="links"><a href="https://www.kungligaslotten.se/drottningholmpalace" target="_blank" rel="noopener">Billets &amp; informations</a></div>
-      </div>
-    </div>
-
-    <div class="card j3" data-poi="_retour">
-      <div class="time">17:30</div>
-      <div class="body">
-        <div class="cardhead"><h4>Retour au centre-ville / temps libre</h4></div>
-        <p>Derniers achats à Södermalm ou Norrmalm, préparation des bagages.</p>
+        <div class="cardhead"><h4>Temps libre / derniers achats</h4></div>
+        <p>Södermalm ou Norrmalm, préparation des bagages, puis retour vers Centralstationen.</p>
       </div>
     </div>
 
     <div class="card j3" data-poi="_transfert">
-      <div class="time">19:00</div>
+      <div class="time glyph">✈️</div>
       <div class="body">
         <div class="cardhead"><h4>Transfert vers l'aéroport</h4></div>
-        <p>Train express Arlanda Express (18 min) ou navette Flygbussarna selon l'aéroport de départ (Arlanda / Bromma / Skavsta).</p>
+        <p>Selon l'horaire de votre vol : Arlanda Express (18 min) ou navette Flygbussarna (Arlanda / Bromma / Skavsta).</p>
         <div class="links">
           <a href="https://www.arlandaexpress.com/" target="_blank" rel="noopener">Arlanda Express — billets</a>
           <a href="https://www.flygbussarna.se/" target="_blank" rel="noopener">Flygbussarna — billets &amp; horaires</a>
@@ -424,14 +391,53 @@
       </div>
     </div>
 
-    <!-- ================= RÉCAP RESTAURANTS ================= -->
-    <h2 class="day">Récapitulatif des restaurants (itinéraire)</h2>
+    <!-- ================= OPTIONNEL ================= -->
+    <h2 class="day" style="color:var(--opt)">Optionnel — si le temps le permet</h2>
+    <p class="daysub">Retirées du programme serré (départs à 14h/11h), mais faciles à réintégrer si vous gagnez du temps.</p>
+
+    <div class="card opt" id="stadshuset" data-poi="stadshuset">
+      <div class="time glyph">＋</div>
+      <div class="body">
+        <div class="cardhead"><h4>Stockholm City Hall (Stadshuset)</h4><span class="mapjump" data-goto="stadshuset">voir sur la carte</span></div>
+        <p>Salons d'apparat (Salle Bleue, Salle d'Or) du banquet Nobel — visite guidée obligatoire. Dernières visites en milieu d'après-midi : difficile avec un départ à 14h le Jour 1 ; à caler en matinée si vos horaires bougent.</p>
+        <div class="links"><a href="https://stadshuset.stockholm/" target="_blank" rel="noopener">Billets &amp; visites guidées</a></div>
+      </div>
+    </div>
+
+    <div class="card opt" id="nordiska" data-poi="nordiska">
+      <div class="time glyph">＋</div>
+      <div class="body">
+        <div class="cardhead"><h4>Nordiska Museet (Musée Nordique)</h4><span class="mapjump" data-goto="nordiska">voir sur la carte</span></div>
+        <p>Voisin du Vasa à Djurgården : vie et traditions nordiques du 16e siècle à nos jours. À intercaler le Jour 2 si vous allégez Skansen ou ABBA.</p>
+        <div class="links"><a href="https://www.nordiskamuseet.se/" target="_blank" rel="noopener">Billets &amp; tarifs</a></div>
+      </div>
+    </div>
+
+    <div class="card opt" id="riddarholmen" data-poi="riddarholmen">
+      <div class="time glyph">＋</div>
+      <div class="body">
+        <div class="cardhead"><h4>Riddarholmen Church</h4><span class="mapjump" data-goto="riddarholmen">voir sur la carte</span></div>
+        <p>Nécropole royale et unique église médiévale conservée, sur l'îlot voisin de Gamla Stan. Ferme vers 17h (ouverte mai–sept).</p>
+        <div class="links"><a href="https://www.kungligaslotten.se/riddarholmskyrkan" target="_blank" rel="noopener">Informations de visite</a></div>
+      </div>
+    </div>
+
+    <div class="card opt" id="drottningholm" data-poi="drottningholm">
+      <div class="time glyph">＋</div>
+      <div class="body">
+        <div class="cardhead"><h4>Château de Drottningholm</h4><span class="mapjump" data-goto="drottningholm">voir sur la carte</span></div>
+        <p>Résidence royale UNESCO, à 40 min du centre par bus ou bateau. Demi-journée — peu compatible avec des départs à 11h et le jour du départ.</p>
+        <div class="links"><a href="https://www.kungligaslotten.se/drottningholmpalace" target="_blank" rel="noopener">Billets &amp; informations</a></div>
+      </div>
+    </div>
+
+    <!-- ================= RESTAURANTS ================= -->
+    <h2 class="day">Récapitulatif des restaurants</h2>
     <div class="tablewrap">
     <table>
       <thead><tr><th>Restaurant</th><th>Quartier</th><th>Site officiel</th></tr></thead>
       <tbody>
         <tr><td>Under Kastanjen</td><td>Gamla Stan</td><td><a href="https://underkastanjen.se/" target="_blank" rel="noopener">underkastanjen.se</a></td></tr>
-        <tr><td>Pelikan</td><td>Södermalm</td><td><a href="https://pelikan.se/" target="_blank" rel="noopener">pelikan.se</a></td></tr>
         <tr><td>Rosendals Trädgård</td><td>Djurgården</td><td><a href="https://rosendalstradgard.se/" target="_blank" rel="noopener">rosendalstradgard.se</a></td></tr>
         <tr><td>Ulla Winbladh</td><td>Djurgården</td><td><a href="https://ullawinbladh.se/" target="_blank" rel="noopener">ullawinbladh.se</a></td></tr>
         <tr><td>Östermalms Saluhall</td><td>Östermalm</td><td><a href="https://ostermalmshallen.se/" target="_blank" rel="noopener">ostermalmshallen.se</a></td></tr>
@@ -443,6 +449,15 @@
     <!-- ================= CUISINE SUÉDOISE ================= -->
     <h2 class="day" style="color:var(--resto)">Autres tables de cuisine suédoise</h2>
     <p class="daysub">Tables traditionnelles (husmanskost), réparties dans les quartiers de l'itinéraire.</p>
+
+    <div class="card resto" id="pelikan" data-poi="pelikan">
+      <div class="time glyph">🍴</div>
+      <div class="body">
+        <div class="cardhead"><h4>Pelikan — Södermalm</h4><span class="mapjump" data-goto="pelikan">voir sur la carte</span></div>
+        <p>Institution de Södermalm depuis 1733 : boulettes de viande et cuisine suédoise traditionnelle dans un décor d'époque. Blekingegatan 40.</p>
+        <div class="links"><a href="https://pelikan.se/" target="_blank" rel="noopener">Réserver une table</a></div>
+      </div>
+    </div>
 
     <div class="card resto" id="freden" data-poi="freden">
       <div class="time glyph">🍴</div>
@@ -490,9 +505,9 @@
     </div>
 
     <div class="note">
-      <strong>Note pratique — billetterie officielle.</strong> Achetez toujours vos billets via les sites officiels ou via
-      <a href="https://gocity.com/stockholm" target="_blank" rel="noopener">Go City — Stockholm Pass</a>
-      pour éviter les plateformes de revente non officielles. Les horaires et tarifs varient selon la saison : vérifiez chaque site avant votre visite.
+      <strong>Note pratique — billetterie officielle.</strong> Achetez vos billets via les sites officiels listés ci-dessus.
+      Sur ce programme, les billets individuels reviennent moins cher que le pass Go City (voir l'encadré en haut).
+      Les horaires et tarifs varient selon la saison : vérifiez chaque site avant votre visite, surtout les heures de dernière entrée.
     </div>
 
     <footer>
@@ -508,36 +523,36 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-// cat: sight | resto | hotel ; id = ancre de 1re citation dans le document
+// cat: sight | resto | hotel | opt ; id = ancre de 1re citation dans le document
 const POIS = [
-  // Sites & activités (numérotés par jour)
-  {id:"stadshuset",cat:"sight",day:1,n:1,lat:59.3275,lng:18.0540,name:"Stockholm City Hall (Stadshuset)",desc:"Jour 1 · 09:00"},
-  {id:"kungliga-slottet",cat:"sight",day:1,n:2,lat:59.3269,lng:18.0715,name:"Palais Royal (Kungliga Slottet)",desc:"Jour 1 · 11:00"},
-  {id:"storkyrkan",cat:"sight",day:1,n:3,lat:59.3257,lng:18.0706,name:"Storkyrkan (Cathédrale)",desc:"Jour 1 · 14:00"},
-  {id:"nobel-museum",cat:"sight",day:1,n:4,lat:59.3255,lng:18.0709,name:"Nobel Prize Museum",desc:"Jour 1 · 14:45"},
-  {id:"riddarholmen",cat:"sight",day:1,n:5,lat:59.3247,lng:18.0647,name:"Riddarholmen Church",desc:"Jour 1 · 16:15"},
-  {id:"gamla-stan-flanerie",cat:"sight",day:1,n:6,lat:59.3243,lng:18.0725,name:"Flânerie Gamla Stan (Iron Boy)",desc:"Jour 1 · 17:00"},
-  {id:"croisiere",cat:"sight",day:1,n:7,lat:59.3252,lng:18.0748,name:"Croisière archipel (Skeppsbron)",desc:"Jour 1 · 19:00"},
-  {id:"vasa",cat:"sight",day:2,n:1,lat:59.3280,lng:18.0915,name:"Vasa Museum",desc:"Jour 2 · 09:30"},
-  {id:"nordiska",cat:"sight",day:2,n:2,lat:59.3273,lng:18.0885,name:"Nordiska Museet",desc:"Jour 2 · 11:30"},
-  {id:"skansen",cat:"sight",day:2,n:3,lat:59.3266,lng:18.1028,name:"Skansen",desc:"Jour 2 · 14:30"},
-  {id:"abba",cat:"sight",day:2,n:4,lat:59.3246,lng:18.0972,name:"ABBA The Museum",desc:"Jour 2 · 17:00"},
-  {id:"monteliusvagen",cat:"sight",day:3,n:1,lat:59.3199,lng:18.0640,name:"Monteliusvägen (point de vue)",desc:"Jour 3 · 09:00"},
-  {id:"fotografiska",cat:"sight",day:3,n:2,lat:59.3178,lng:18.0847,name:"Fotografiska",desc:"Jour 3 · 10:00"},
-  {id:"drottningholm",cat:"sight",day:3,n:3,lat:59.3216,lng:17.8859,name:"Château de Drottningholm",desc:"Jour 3 · 14:00 (option)"},
-  // Restaurants de l'itinéraire
-  {id:"under-kastanjen",cat:"resto",lat:59.3252,lng:18.0710,name:"Under Kastanjen",desc:"Gamla Stan · déjeuner (Jour 1)"},
-  {id:"pelikan",cat:"resto",lat:59.3106,lng:18.0789,name:"Pelikan",desc:"Södermalm · dîner (Jour 1)"},
+  // Sites au programme (numérotés par jour)
+  {id:"kungliga-slottet",cat:"sight",day:1,n:1,lat:59.3269,lng:18.0715,name:"Palais Royal (Kungliga Slottet)",desc:"Jour 1 · 14:00"},
+  {id:"storkyrkan",cat:"sight",day:1,n:2,lat:59.3257,lng:18.0706,name:"Storkyrkan (Cathédrale)",desc:"Jour 1 · 15:45"},
+  {id:"nobel-museum",cat:"sight",day:1,n:3,lat:59.3255,lng:18.0709,name:"Nobel Prize Museum",desc:"Jour 1 · 16:15"},
+  {id:"gamla-stan-flanerie",cat:"sight",day:1,n:4,lat:59.3243,lng:18.0725,name:"Flânerie Gamla Stan (Iron Boy)",desc:"Jour 1 · 17:30"},
+  {id:"croisiere",cat:"sight",day:1,n:5,lat:59.3252,lng:18.0748,name:"Croisière archipel (Skeppsbron)",desc:"Jour 1 · 19:00"},
+  {id:"vasa",cat:"sight",day:2,n:1,lat:59.3280,lng:18.0915,name:"Vasa Museum",desc:"Jour 2 · 11:30"},
+  {id:"skansen",cat:"sight",day:2,n:2,lat:59.3266,lng:18.1028,name:"Skansen",desc:"Jour 2 · 14:30"},
+  {id:"abba",cat:"sight",day:2,n:3,lat:59.3246,lng:18.0972,name:"ABBA The Museum",desc:"Jour 2 · 17:00"},
+  {id:"monteliusvagen",cat:"sight",day:3,n:1,lat:59.3199,lng:18.0640,name:"Monteliusvägen (point de vue)",desc:"Jour 3 · 11:00"},
+  {id:"fotografiska",cat:"sight",day:3,n:2,lat:59.3178,lng:18.0847,name:"Fotografiska",desc:"Jour 3 · 11:45"},
+  // Optionnels (retirés du programme serré)
+  {id:"stadshuset",cat:"opt",lat:59.3275,lng:18.0540,name:"Stockholm City Hall (Stadshuset)",desc:"Optionnel · Kungsholmen"},
+  {id:"nordiska",cat:"opt",lat:59.3273,lng:18.0885,name:"Nordiska Museet",desc:"Optionnel · Djurgården"},
+  {id:"riddarholmen",cat:"opt",lat:59.3247,lng:18.0647,name:"Riddarholmen Church",desc:"Optionnel · Gamla Stan"},
+  {id:"drottningholm",cat:"opt",lat:59.3216,lng:17.8859,name:"Château de Drottningholm",desc:"Optionnel · demi-journée"},
+  // Restaurants
+  {id:"under-kastanjen",cat:"resto",lat:59.3252,lng:18.0710,name:"Under Kastanjen",desc:"Gamla Stan · dîner (Jour 1)"},
   {id:"rosendals",cat:"resto",lat:59.3269,lng:18.1085,name:"Rosendals Trädgård",desc:"Djurgården · déjeuner (Jour 2)"},
   {id:"ulla-winbladh",cat:"resto",lat:59.3270,lng:18.0958,name:"Ulla Winbladh",desc:"Djurgården · dîner (Jour 2)"},
   {id:"ostermalms-saluhall",cat:"resto",lat:59.3356,lng:18.0742,name:"Östermalms Saluhall",desc:"Östermalm · déjeuner (Jour 3)"},
+  {id:"pelikan",cat:"resto",lat:59.3106,lng:18.0789,name:"Pelikan",desc:"Södermalm · husmanskost (1733)"},
   {id:"meatballs",cat:"resto",lat:59.3138,lng:18.0796,name:"Meatballs for the People",desc:"Södermalm · boulettes"},
-  // Autres tables de cuisine suédoise
-  {id:"freden",cat:"resto",extra:true,lat:59.3228,lng:18.0728,name:"Den Gyldene Freden",desc:"Gamla Stan · husmanskost (1722)"},
-  {id:"kvarnen",cat:"resto",extra:true,lat:59.3149,lng:18.0748,name:"Kvarnen",desc:"Södermalm · husmanskost (1908)"},
-  {id:"prinsen",cat:"resto",extra:true,lat:59.3344,lng:18.0705,name:"Prinsen",desc:"Norrmalm · husmanskost (1897)"},
-  {id:"bakfickan",cat:"resto",extra:true,lat:59.3298,lng:18.0708,name:"Operakällarens Bakficka",desc:"Norrmalm · husmanskost (Opéra)"},
-  {id:"tennstopet",cat:"resto",extra:true,lat:59.3431,lng:18.0435,name:"Tennstopet",desc:"Vasastan · husmanskost (1867)"},
+  {id:"freden",cat:"resto",lat:59.3228,lng:18.0728,name:"Den Gyldene Freden",desc:"Gamla Stan · husmanskost (1722)"},
+  {id:"kvarnen",cat:"resto",lat:59.3149,lng:18.0748,name:"Kvarnen",desc:"Södermalm · husmanskost (1908)"},
+  {id:"prinsen",cat:"resto",lat:59.3344,lng:18.0705,name:"Prinsen",desc:"Norrmalm · husmanskost (1897)"},
+  {id:"bakfickan",cat:"resto",lat:59.3298,lng:18.0708,name:"Operakällarens Bakficka",desc:"Norrmalm · husmanskost (Opéra)"},
+  {id:"tennstopet",cat:"resto",lat:59.3431,lng:18.0435,name:"Tennstopet",desc:"Vasastan · husmanskost (1867)"},
   // Hôtel
   {id:"hotel",cat:"hotel",lat:59.3307,lng:18.0550,name:"Radisson Blu Waterfront Hotel",desc:"Votre hôtel · près de Centralstationen"}
 ];
@@ -545,11 +560,13 @@ const POIS = [
 function iconHtml(p){
   if(p.cat==="hotel") return '<div class="pin hotel"><b></b><i class="emo">🏨</i></div>';
   if(p.cat==="resto") return '<div class="pin resto"><b></b><i class="emo">🍴</i></div>';
+  if(p.cat==="opt")   return '<div class="pin opt"><b></b><i>＋</i></div>';
   return `<div class="pin j${p.day}"><b></b><i>${p.n}</i></div>`;
 }
 function badgeOf(p){
   if(p.cat==="hotel") return ["hotel","Hôtel"];
   if(p.cat==="resto") return ["resto","Restaurant"];
+  if(p.cat==="opt")   return ["opt","Optionnel"];
   return ["j"+p.day,"Jour "+p.day];
 }
 function gmapsUrl(p){
@@ -558,6 +575,7 @@ function gmapsUrl(p){
 function chipIcon(p){
   if(p.cat==="hotel") return {bg:"var(--hotel)",txt:"🏨"};
   if(p.cat==="resto") return {bg:"var(--resto)",txt:"🍴"};
+  if(p.cat==="opt")   return {bg:"var(--opt)",txt:"＋"};
   return {bg:"var(--j"+p.day+")",txt:p.n};
 }
 
@@ -693,9 +711,10 @@ function group(title,items){
   chips.appendChild(h); chips.appendChild(row);
 }
 const F=f=>POIS.filter(f);
-group('Jour 1 — Gamla Stan', F(p=>p.cat==='sight'&&p.day===1));
-group('Jour 2 — Djurgården', F(p=>p.cat==='sight'&&p.day===2));
-group('Jour 3 — Södermalm', F(p=>p.cat==='sight'&&p.day===3));
+group('Jour 1 — Gamla Stan (dès 14h)', F(p=>p.cat==='sight'&&p.day===1));
+group('Jour 2 — Djurgården (dès 11h)', F(p=>p.cat==='sight'&&p.day===2));
+group('Jour 3 — Södermalm (dès 11h)', F(p=>p.cat==='sight'&&p.day===3));
+group('Optionnel', F(p=>p.cat==='opt'));
 group('Restaurants — cuisine suédoise', F(p=>p.cat==='resto'));
 group('Hôtel', F(p=>p.cat==='hotel'));
 
