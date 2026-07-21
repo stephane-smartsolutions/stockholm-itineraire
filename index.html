@@ -21,9 +21,8 @@
   a{color:var(--teal);text-decoration:none}
   a:hover{text-decoration:underline}
 
-  /* En-tête collant unique : barre de titre + barre de filtres (un seul élément sticky, robuste) */
-  .topwrap{position:sticky;top:0;z-index:1000;background:var(--bg)}
-  .topbar{background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
+  /* Barre de titre (fine, collante) */
+  .topbar{position:sticky;top:0;z-index:1000;background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
           justify-content:space-between;gap:12px;padding:9px 16px}
   .tb-title{font-size:16.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tb-actions{display:flex;gap:8px;flex:0 0 auto}
@@ -34,7 +33,7 @@
   /* Carte en haut, pleine largeur du viewport */
   .app{display:block}
   .mappane{width:100%;height:var(--maph,46vh);display:flex;flex-direction:column;
-           min-height:200px;background:#fff}
+           min-height:200px;background:#fff;scroll-margin-top:var(--topH,48px)}
   #map{flex:1 1 auto;min-height:0;width:100%;z-index:0}
   .maplegend{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;
              padding:7px 12px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
@@ -64,12 +63,9 @@
                box-shadow:0 3px 10px rgba(0,0,0,.25)}
   .showmap-fab[hidden]{display:none}
 
-  /* Barre de filtres : DANS l'en-tête collant, toujours UNE seule ligne (jamais d'enroulement).
-     Si trop étroit, défilement horizontal (barre masquée) plutôt que passage à la ligne. */
-  .filterbar{background:var(--bg);display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
-             scrollbar-width:none;gap:6px;padding:8px 28px 9px;border-bottom:1px solid var(--line);
-             box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
-  .filterbar::-webkit-scrollbar{display:none}
+  /* Barre de filtres : bloc en flux normal qui se réorganise (passe à la ligne) selon la largeur,
+     comme les fiches. S'adapte à n'importe quel nombre de boutons, tous toujours visibles. */
+  .filterbar{background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;padding:9px 28px;border-bottom:1px solid var(--line)}
   .fbtn{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
         cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap}
   .fbtn:hover{border-color:var(--teal)}
@@ -93,7 +89,7 @@
 
   /* Cartes POI */
   .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
-        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,100px) + 12px)}
+        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,48px) + 12px)}
   .card.musee{border-left-color:var(--musee)} .card.palais{border-left-color:var(--palais)}
   .card.panorama{border-left-color:var(--panorama)} .card.croisiere{border-left-color:var(--croisiere)}
   .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)}
@@ -170,8 +166,8 @@
     .card{grid-template-columns:52px 1fr}
     .tb-title{font-size:15px}
     .btn{padding:8px 13px}
-    /* Filtres : padding réduit sur mobile (le comportement une-ligne-défilante est déjà global) */
-    .filterbar{padding:8px 16px 9px}
+    /* Filtres : padding réduit sur mobile */
+    .filterbar{padding:9px 16px}
   }
 
   /* Fiches en grille fluide : autant de colonnes que la largeur permet (chacune ≥ ~430px),
@@ -186,15 +182,13 @@
 </head>
 <body>
 
-<div class="topwrap">
-  <header class="topbar">
-    <div class="tb-title">Stockholm — Points d'intérêt</div>
-    <div class="tb-actions">
-      <button class="btn" id="toggleMap">Masquer la carte</button>
-    </div>
-  </header>
-  <div class="filterbar" id="filterbar"></div>
-</div>
+<header class="topbar">
+  <div class="tb-title">Stockholm — Points d'intérêt</div>
+  <div class="tb-actions">
+    <button class="btn" id="toggleMap">Masquer la carte</button>
+  </div>
+</header>
+<div class="filterbar" id="filterbar"></div>
 
 <div class="app" id="app">
   <section class="mappane" id="mappane">
@@ -617,12 +611,12 @@
 <script>
 // theme: musee | palais | panorama | croisiere | resto | hotel ; rank = priorité globale (attractions) ; id = ancre
 const THEME_META = {
-  musee:{label:"Musées", short:"Musées", icon:"🏛️", color:"#1f6f8b"},
-  palais:{label:"Palais & monuments", short:"Palais", icon:"👑", color:"#8a4fbf"},
-  panorama:{label:"Quartiers & panoramas", short:"Panoramas", icon:"🌆", color:"#2e8b57"},
-  croisiere:{label:"Croisières & bateaux", short:"Croisières", icon:"⛵", color:"#c8621b"},
-  resto:{label:"Restaurants", short:"Restaurants", icon:"🍴", color:"#b3283b"},
-  hotel:{label:"Hôtel", short:"Hôtel", icon:"🏨", color:"#1b3a5b"}
+  musee:{label:"Musées", icon:"🏛️", color:"#1f6f8b"},
+  palais:{label:"Palais & monuments", icon:"👑", color:"#8a4fbf"},
+  panorama:{label:"Quartiers & panoramas", icon:"🌆", color:"#2e8b57"},
+  croisiere:{label:"Croisières & bateaux", icon:"⛵", color:"#c8621b"},
+  resto:{label:"Restaurants", icon:"🍴", color:"#b3283b"},
+  hotel:{label:"Hôtel", icon:"🏨", color:"#1b3a5b"}
 };
 const THEME_ORDER = ["musee","palais","panorama","croisiere","resto","hotel"];
 
@@ -699,7 +693,7 @@ POIS.forEach(p=>{
 /* ===== Coquille : carte redimensionnable/masquable en haut de page ===== */
 const app=document.getElementById('app');
 const mappane=document.getElementById('mappane');
-const topwrapEl=document.querySelector('.topwrap');
+const topbarEl=document.querySelector('.topbar');
 const gutter=document.getElementById('gutter');
 const toggleBtn=document.getElementById('toggleMap');
 const fab=document.getElementById('showMapFab');
@@ -774,10 +768,10 @@ gutter.addEventListener('dblclick', ()=>{
 
 // Masquer / afficher la carte
 toggleBtn.addEventListener('click', ()=> setHidden(!app.classList.contains('maphidden'), true));
-fab.addEventListener('click', ()=>{ setHidden(false, true); window.scrollTo({top:0,behavior:'smooth'}); });
+fab.addEventListener('click', ()=>{ setHidden(false, true); mappane.scrollIntoView({behavior:'smooth',block:'start'}); });
 
-// Hauteur de l'en-tête collant (titre + filtres) → offset d'ancrage des fiches
-function setTopH(){ document.documentElement.style.setProperty('--topH', topwrapEl.offsetHeight+'px'); }
+// Hauteur de la barre de titre collante → offset d'ancrage (carte + fiches)
+function setTopH(){ document.documentElement.style.setProperty('--topH', topbarEl.offsetHeight+'px'); }
 setTopH();
 window.addEventListener('resize', ()=>{ setTopH(); if(!raf) raf=requestAnimationFrame(()=>{ raf=0; refreshMap(); }); });
 
@@ -815,8 +809,8 @@ function addFbtn(theme,label){
   b.addEventListener('click', ()=> theme==='all'?showAllThemes():toggleTheme(theme));
   filterbar.appendChild(b);
 }
-addFbtn('all','Tout');
-THEME_ORDER.forEach(k=> addFbtn(k, THEME_META[k].icon+' '+THEME_META[k].short));
+addFbtn('all','Tout afficher');
+THEME_ORDER.forEach(k=> addFbtn(k, THEME_META[k].icon+' '+THEME_META[k].label));
 
 // Légende de la carte (couleurs des thématiques)
 const legend=document.getElementById('maplegend');
@@ -844,8 +838,8 @@ function showOnMap(id){
   if(wasHidden) setHidden(false, true);
   // s'assurer que le marqueur est présent malgré le filtre courant
   if(!map.hasLayer(markers[id])) markers[id].addTo(map);
-  // ramener la carte (en haut de page) dans la vue
-  window.scrollTo({top:0,behavior:'smooth'});
+  // ramener la carte dans la vue (sous la barre de titre)
+  mappane.scrollIntoView({behavior:'smooth',block:'start'});
   const go=()=>{ map.invalidateSize({animate:false}); map.setView([p.lat,p.lng], Math.max(map.getZoom(),15)); markers[id].openPopup(); };
   setTimeout(go, wasHidden?180:150);
 }
