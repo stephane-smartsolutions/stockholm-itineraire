@@ -15,15 +15,14 @@
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  html,body{height:100%}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        background:var(--bg);color:var(--ink);line-height:1.5;-webkit-text-size-adjust:100%;
-       display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;overscroll-behavior:none}
+       min-height:100vh;min-height:100dvh}
   a{color:var(--teal);text-decoration:none}
   a:hover{text-decoration:underline}
 
-  /* Barre supérieure */
-  .topbar{flex:0 0 auto;background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
+  /* Barre supérieure (collante) */
+  .topbar{position:sticky;top:0;z-index:1000;background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
           justify-content:space-between;gap:12px;padding:9px 16px}
   .tb-title{font-size:16.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tb-actions{display:flex;gap:8px;flex:0 0 auto}
@@ -31,10 +30,10 @@
        border-radius:7px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
   .btn:hover{background:rgba(255,255,255,.27)}
 
-  /* Coquille deux volets */
-  .app{flex:1 1 auto;display:flex;min-height:0}
-  .mappane{flex:0 0 var(--mapw,46%);display:flex;flex-direction:column;min-width:0;min-height:0;
-           background:#fff;border-right:1px solid var(--line)}
+  /* Carte en haut, pleine largeur (centrée sur les grands écrans) */
+  .app{display:block}
+  .mappane{width:100%;max-width:1300px;margin:0 auto;height:var(--maph,46vh);display:flex;flex-direction:column;
+           min-height:200px;background:#fff}
   #map{flex:1 1 auto;min-height:0;width:100%;z-index:0}
   .maplegend{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;
              padding:7px 12px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
@@ -42,16 +41,16 @@
   .maplegend .hint{margin-left:auto;font-style:italic}
   .dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 auto}
 
-  /* Poignée de redimensionnement */
-  .gutter{flex:0 0 8px;cursor:col-resize;background:var(--line);position:relative;touch-action:none}
+  /* Poignée de redimensionnement (horizontale, sous la carte) */
+  .gutter{width:100%;max-width:1300px;margin:0 auto;height:18px;cursor:row-resize;background:var(--line);
+          position:relative;touch-action:none;display:flex;align-items:center;justify-content:center}
   .gutter:hover,.gutter.dragging{background:var(--teal)}
-  .gutter::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-                  width:0;height:26px;border-left:2px dotted rgba(0,0,0,.4)}
+  .gutter::before{content:"";width:46px;height:5px;border-radius:3px;background:rgba(0,0,0,.3)}
+  .gutter:hover::before,.gutter.dragging::before{background:#fff}
 
-  /* Volet texte (scroll indépendant) */
-  .content{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-           min-width:0;min-height:0;padding:0 24px 56px}
-  .content-inner{max-width:840px;margin:0 auto}
+  /* Volet texte (flux normal de la page) */
+  .content{padding:0 28px 56px}
+  .content-inner{max-width:1300px;margin:0 auto}
   .pageintro{color:#3f4f4e;font-size:14px;padding:16px 0 2px}
   .pageintro .k{white-space:nowrap}
 
@@ -62,9 +61,9 @@
                box-shadow:0 3px 10px rgba(0,0,0,.25)}
   .showmap-fab[hidden]{display:none}
 
-  /* Barre de filtres par thématique (collante) */
-  .filterbar{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;
-             padding:10px 0 9px;border-bottom:1px solid var(--line);margin:6px 0 2px}
+  /* Barre de filtres par thématique (collante sous la topbar) */
+  .filterbar{position:sticky;top:var(--topH,48px);z-index:900;background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;
+             padding:10px 0 9px;border-bottom:1px solid var(--line);margin:0 0 2px;box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
   .fbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
         cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap}
   .fbtn:hover{border-color:var(--teal)}
@@ -88,7 +87,7 @@
 
   /* Cartes POI */
   .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
-        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:64px}
+        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,48px) + 66px)}
   .card.musee{border-left-color:var(--musee)} .card.palais{border-left-color:var(--palais)}
   .card.panorama{border-left-color:var(--panorama)} .card.croisiere{border-left-color:var(--croisiere)}
   .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)}
@@ -159,13 +158,8 @@
            padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none!important;background:#fff}
   .pop-map:hover{background:#eef6f5}
 
-  /* Empilement vertical sur écran étroit */
+  /* Écran étroit */
   @media (max-width:820px){
-    .app{flex-direction:column}
-    .mappane{flex:0 0 var(--maph,44vh);width:100%;border-right:0;border-bottom:1px solid var(--line)}
-    .gutter{flex:0 0 26px;width:100%;cursor:row-resize;display:flex;align-items:center;justify-content:center}
-    .gutter::before{position:static;transform:none;width:46px;height:5px;border:0;border-radius:3px;background:rgba(0,0,0,.3)}
-    .gutter:hover::before,.gutter.dragging::before{background:#fff}
     .content{padding:0 16px 48px}
     .card{grid-template-columns:52px 1fr}
     .tb-title{font-size:15px}
@@ -174,6 +168,13 @@
     .filterbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:6px}
     .filterbar::-webkit-scrollbar{display:none}
     .fbtn{flex:0 0 auto}
+  }
+
+  /* Écran large : fiches sur deux colonnes (masonry) pour utiliser la largeur — tout reste en scroll vertical */
+  @media (min-width:1000px){
+    .themeblock{column-count:2;column-gap:20px}
+    .themeblock > h2.theme,.themeblock > .themesub{column-span:all}
+    .themeblock .card{break-inside:avoid;margin:0 0 14px}
   }
 </style>
 </head>
@@ -204,24 +205,6 @@
 
     <div class="filterbar" id="filterbar"></div>
 
-    <!-- ================= PASS GO CITY ================= -->
-    <div class="passbox">
-      <h3>Pass Go City — rentable pour les grandes activités : oui</h3>
-      <p>Le pass Go City Tout Inclus couvre 12 des activités ci-dessous (dont 3 croisières, chères à l'unité). Les billets à la carte
-        coûtent bien plus que le pass. Pour <strong>2 adultes + 1 jeune de 17 ans</strong> (16 ans et + = tarif adulte) :</p>
-      <div class="tablewrap">
-      <table>
-        <thead><tr><th>2 adultes + 1 jeune (17 ans)</th><th>Total</th><th>Écart</th></tr></thead>
-        <tbody>
-          <tr><td>Pass Go City 3 jours (158 €/adulte)</td><td class="num">474 €</td><td class="num">—</td></tr>
-          <tr><td>Billets à la carte (12 activités)</td><td class="num">≈ 701 €</td><td class="num">+227 €</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="verdict">→ Sur les grandes activités, le pass fait économiser ≈ 227 € (≈ 197 € rien que pour les 2 adultes).</p>
-      <p style="font-size:13px;color:var(--muted);margin:6px 0 0">Valeurs « prix sans pass » du planificateur Go City (EUR) : 256,74 €/adulte à la carte. Le jeune de 17 ans paie le pass adulte, mais bénéficie de gratuités à la carte (Vasa, Nationalmuseum, Historiska), déjà comptées (≈ 188 €). Nationalmuseum et Historiska sont en réalité gratuits en collection permanente : l'écart réel est un peu moindre, mais reste franchement en faveur du pass. Pass ≈ 1 699 SEK/adulte.<br><strong>ABBA The Museum n'est pas inclus dans le pass Go City</strong> : prévoyez un billet à part (~26 €/adulte, ~77 € pour vous 3), que vous preniez le pass ou non.</p>
-    </div>
-
     <section class="intro">
       <h2>Avant de partir — transports</h2>
       <p class="lead">Aéroport ↔ ville : <a href="https://www.arlandaexpress.com/" target="_blank" rel="noopener">Arlanda Express</a>
@@ -229,7 +212,7 @@
         <a href="https://www.flygbussarna.se/" target="_blank" rel="noopener">Flygbussarna</a>.
         En ville : <a href="https://sl.se/" target="_blank" rel="noopener">SL</a> (métro, bus, tram, bacs).
         Croisières &amp; bateaux : <a href="https://www.stromma.com/" target="_blank" rel="noopener">Strömma</a>.
-        Pass : <a href="https://gocity.com/stockholm" target="_blank" rel="noopener">Go City — Pass Tout Inclus</a> (voir l'encadré ci-dessus).</p>
+        Billets &amp; pass : <a href="https://gocity.com/stockholm" target="_blank" rel="noopener">Go City — Pass Tout Inclus</a> (à l'unité ou en pass selon votre programme).</p>
     </section>
 
     <!-- ================= MUSÉES ================= -->
@@ -706,22 +689,33 @@ POIS.forEach(p=>{
   markers[p.id]=m;
 });
 
-/* ===== Coquille : redimensionnement, masquage, scroll indépendant ===== */
+/* ===== Coquille : carte redimensionnable/masquable en haut de page ===== */
 const app=document.getElementById('app');
+const mappane=document.getElementById('mappane');
+const topbarEl=document.querySelector('.topbar');
 const gutter=document.getElementById('gutter');
 const toggleBtn=document.getElementById('toggleMap');
 const fab=document.getElementById('showMapFab');
 const LS={mw:'sthlm.mapw', mh:'sthlm.maph', hid:'sthlm.mapHidden', flt:'sthlm.filter'};
+
+// Thématiques actives (multi-sélection). Restaurées depuis localStorage ; toutes par défaut.
+let activeThemes;
+try{
+  const f=JSON.parse(localStorage.getItem(LS.flt)||'null');
+  activeThemes=(Array.isArray(f)&&f.length)?new Set(f.filter(k=>THEME_META[k])):new Set(THEME_ORDER);
+  if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
+}catch(_){ activeThemes=new Set(THEME_ORDER); }
 
 function isColumn(){ return window.matchMedia('(max-width:820px)').matches; }
 function refreshMap(){ map.invalidateSize({animate:false}); }
 
 function fitVisible(){
   if(app.classList.contains('maphidden')) return;
-  const pts=POIS.filter(p=> activeFilter==='all'||p.theme===activeFilter).map(p=>[p.lat,p.lng]);
+  const pts=POIS.filter(p=> activeThemes.has(p.theme)).map(p=>[p.lat,p.lng]);
   if(!pts.length) return;
+  const allOn=THEME_ORDER.every(k=>activeThemes.has(k));
   map.invalidateSize({animate:false});
-  map.fitBounds(pts,{padding:[40,40], maxZoom: activeFilter==='all'?16:15});
+  map.fitBounds(pts,{padding:[40,40], maxZoom: allOn?16:15});
 }
 function setHidden(hide, persist){
   app.classList.toggle('maphidden', hide);
@@ -747,14 +741,9 @@ gutter.addEventListener('pointerdown', e=>{
 });
 gutter.addEventListener('pointermove', e=>{
   if(!dragging) return;
-  const r=app.getBoundingClientRect();
-  if(isColumn()){
-    let h=e.clientY-r.top; h=Math.max(120, Math.min(h, r.height-140));
-    app.style.setProperty('--maph', h+'px');
-  } else {
-    let w=e.clientX-r.left; w=Math.max(240, Math.min(w, r.width-280));
-    app.style.setProperty('--mapw', w+'px');
-  }
+  const top=mappane.getBoundingClientRect().top;
+  let h=e.clientY-top; h=Math.max(180, Math.min(h, Math.round(window.innerHeight*0.85)));
+  app.style.setProperty('--maph', h+'px');
   if(!raf) raf=requestAnimationFrame(()=>{ raf=0; refreshMap(); });
 });
 function endDrag(e){
@@ -778,42 +767,45 @@ gutter.addEventListener('dblclick', ()=>{
 
 // Masquer / afficher la carte
 toggleBtn.addEventListener('click', ()=> setHidden(!app.classList.contains('maphidden'), true));
-fab.addEventListener('click', ()=> setHidden(false, true));
-window.addEventListener('resize', ()=>{ if(!raf) raf=requestAnimationFrame(()=>{ raf=0; refreshMap(); }); });
+fab.addEventListener('click', ()=>{ setHidden(false, true); mappane.scrollIntoView({behavior:'smooth',block:'start'}); });
+
+// Hauteur de la topbar collante → offset de la barre de filtres et de l'ancrage des fiches
+function setTopH(){ document.documentElement.style.setProperty('--topH', topbarEl.offsetHeight+'px'); }
+setTopH();
+window.addEventListener('resize', ()=>{ setTopH(); if(!raf) raf=requestAnimationFrame(()=>{ raf=0; refreshMap(); }); });
 
 /* ===== Filtres par thématique (carte + texte) ===== */
 const filterbar=document.getElementById('filterbar');
 const themeSections={};
 document.querySelectorAll('.themeblock').forEach(s=> themeSections[s.dataset.theme]=s);
-let activeFilter='all';
-
-function applyFilter(theme){
-  if(theme!=='all' && !THEME_META[theme]) theme='all';
-  activeFilter=theme;
+function applyFilters(){
+  const allOn=THEME_ORDER.every(k=>activeThemes.has(k));
   // marqueurs sur la carte
   POIS.forEach(p=>{
-    const on=(theme==='all'||p.theme===theme);
+    const on=activeThemes.has(p.theme);
     const m=markers[p.id];
     if(on){ if(!map.hasLayer(m)) m.addTo(map); }
     else if(map.hasLayer(m)){ map.removeLayer(m); }
   });
   // sections de texte
-  Object.entries(themeSections).forEach(([k,sec])=>{ sec.hidden = !(theme==='all'||k===theme); });
-  // boutons
+  Object.entries(themeSections).forEach(([k,sec])=>{ sec.hidden = !activeThemes.has(k); });
+  // boutons (multi-sélection : chaque thème actif surligné ; « Tout » actif si tout est coché)
   document.querySelectorAll('.fbtn').forEach(btn=>{
-    const active=btn.dataset.theme===theme;
+    const t=btn.dataset.theme;
+    const active = t==='all' ? allOn : activeThemes.has(t);
     btn.classList.toggle('active', active);
-    if(active){ btn.style.background = theme==='all'?'var(--teal)':THEME_META[theme].color; }
-    else { btn.style.background=''; }
+    btn.style.background = active ? (t==='all'?'var(--teal)':THEME_META[t].color) : '';
   });
-  try{ localStorage.setItem(LS.flt, theme); }catch(_){}
+  try{ localStorage.setItem(LS.flt, JSON.stringify([...activeThemes])); }catch(_){}
   fitVisible();
 }
+function toggleTheme(t){ if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t); applyFilters(); }
+function showAllThemes(){ activeThemes=new Set(THEME_ORDER); applyFilters(); }
 function addFbtn(theme,label){
   const b=document.createElement('button');
   b.className='fbtn'; b.dataset.theme=theme;
   b.innerHTML=(theme==='all'?'':`<span class="fdot" style="background:${THEME_META[theme].color}"></span>`)+label;
-  b.addEventListener('click', ()=> applyFilter(theme));
+  b.addEventListener('click', ()=> theme==='all'?showAllThemes():toggleTheme(theme));
   filterbar.appendChild(b);
 }
 addFbtn('all','Tout afficher');
@@ -835,7 +827,7 @@ function jumpTo(id){
   const el=document.getElementById(id); if(!el) return;
   // si la fiche est masquée par un filtre, revenir à « Tout afficher »
   const sec=el.closest('.themeblock');
-  if(sec && sec.hidden) applyFilter('all');
+  if(sec && sec.hidden){ activeThemes.add(sec.dataset.theme); applyFilters(); }
   el.scrollIntoView({behavior:'smooth',block:'center'});
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
@@ -845,8 +837,10 @@ function showOnMap(id){
   if(wasHidden) setHidden(false, true);
   // s'assurer que le marqueur est présent malgré le filtre courant
   if(!map.hasLayer(markers[id])) markers[id].addTo(map);
+  // ramener la carte (en haut de page) dans la vue
+  mappane.scrollIntoView({behavior:'smooth',block:'start'});
   const go=()=>{ map.invalidateSize({animate:false}); map.setView([p.lat,p.lng], Math.max(map.getZoom(),15)); markers[id].openPopup(); };
-  if(wasHidden) setTimeout(go, 70); else go();
+  setTimeout(go, wasHidden?180:150);
 }
 document.addEventListener('click', e=>{
   const t=e.target.closest('[data-goto]'); if(!t) return;
@@ -856,9 +850,8 @@ document.addEventListener('click', e=>{
   else { map.closePopup(); jumpTo(id); }
 });
 
-// Filtre initial (mémorisé) + ajustement de la carte
-try{ const f=localStorage.getItem(LS.flt); if(f) activeFilter=f; }catch(_){}
-setTimeout(()=> applyFilter(activeFilter), 60);
+// Application initiale des filtres (état mémorisé) + ajustement de la carte
+setTimeout(()=> applyFilters(), 60);
 </script>
 </body>
 </html>
