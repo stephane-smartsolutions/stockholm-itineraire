@@ -172,11 +172,14 @@
     .fbtn{flex:0 0 auto}
   }
 
-  /* Fiches en colonnes fluides : autant de colonnes que la largeur du viewport permet
-     (chacune ≥ ~440px), donc pleinement adaptatif — 1 colonne sur mobile, N sur grand écran */
-  .themeblock{column-width:440px;column-gap:22px}
-  .themeblock > h2.theme,.themeblock > .themesub{column-span:all}
-  .themeblock .card{break-inside:avoid;margin:0 0 14px}
+  /* Fiches en grille fluide : autant de colonnes que la largeur permet (chacune ≥ ~430px),
+     réactive au redimensionnement de la fenêtre sur tous les navigateurs (Safari inclus).
+     min(430px,100%) évite tout débordement horizontal sur écran étroit. */
+  .themeblock{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(430px,100%), 1fr));
+              gap:14px 20px;align-items:start}
+  .themeblock > h2.theme,.themeblock > .themesub{grid-column:1 / -1}
+  .themeblock .card{margin:0;min-width:0}
+  .card h4,.card p{overflow-wrap:break-word}
 </style>
 </head>
 <body>
