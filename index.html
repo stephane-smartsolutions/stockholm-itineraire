@@ -21,8 +21,9 @@
   a{color:var(--teal);text-decoration:none}
   a:hover{text-decoration:underline}
 
-  /* Barre supérieure (collante) */
-  .topbar{position:sticky;top:0;z-index:1000;background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
+  /* En-tête collant unique : barre de titre + barre de filtres (un seul élément sticky, robuste) */
+  .topwrap{position:sticky;top:0;z-index:1000;background:var(--bg)}
+  .topbar{background:var(--teal);color:#eaf5f4;display:flex;align-items:center;
           justify-content:space-between;gap:12px;padding:9px 16px}
   .tb-title{font-size:16.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tb-actions{display:flex;gap:8px;flex:0 0 auto}
@@ -63,9 +64,9 @@
                box-shadow:0 3px 10px rgba(0,0,0,.25)}
   .showmap-fab[hidden]{display:none}
 
-  /* Barre de filtres par thématique (collante sous la topbar) */
-  .filterbar{position:sticky;top:var(--topH,48px);z-index:900;background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;
-             padding:10px 0 9px;border-bottom:1px solid var(--line);margin:0 0 2px;box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
+  /* Barre de filtres : bloc normal DANS l'en-tête collant (plus de sticky propre → plus de glissement) */
+  .filterbar{background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;
+             padding:8px 28px 9px;border-bottom:1px solid var(--line);box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
   .fbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
         cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap}
   .fbtn:hover{border-color:var(--teal)}
@@ -89,7 +90,7 @@
 
   /* Cartes POI */
   .card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
-        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,48px) + 66px)}
+        border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,100px) + 12px)}
   .card.musee{border-left-color:var(--musee)} .card.palais{border-left-color:var(--palais)}
   .card.panorama{border-left-color:var(--panorama)} .card.croisiere{border-left-color:var(--croisiere)}
   .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)}
@@ -166,8 +167,8 @@
     .card{grid-template-columns:52px 1fr}
     .tb-title{font-size:15px}
     .btn{padding:8px 13px}
-    /* Filtres : une seule ligne défilante horizontalement (compacte, collante) */
-    .filterbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:6px}
+    /* Filtres : une seule ligne défilante horizontalement (compacte) */
+    .filterbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:6px;padding:8px 16px 9px}
     .filterbar::-webkit-scrollbar{display:none}
     .fbtn{flex:0 0 auto}
   }
@@ -184,12 +185,15 @@
 </head>
 <body>
 
-<header class="topbar">
-  <div class="tb-title">Stockholm — Points d'intérêt</div>
-  <div class="tb-actions">
-    <button class="btn" id="toggleMap">Masquer la carte</button>
-  </div>
-</header>
+<div class="topwrap">
+  <header class="topbar">
+    <div class="tb-title">Stockholm — Points d'intérêt</div>
+    <div class="tb-actions">
+      <button class="btn" id="toggleMap">Masquer la carte</button>
+    </div>
+  </header>
+  <div class="filterbar" id="filterbar"></div>
+</div>
 
 <div class="app" id="app">
   <section class="mappane" id="mappane">
@@ -206,8 +210,6 @@
       (le numéro = le rang, <span class="k">N°1 = incontournable absolu</span>) et <strong>regroupés par thématique</strong>.
       Utilisez les <strong>boutons de filtre</strong> pour n'afficher qu'une thématique — sur la carte comme dans le texte.
       Cliquez un marqueur pour rejoindre sa fiche ; 🍴 = restaurant, 🏨 = hôtel.</div>
-
-    <div class="filterbar" id="filterbar"></div>
 
     <section class="intro">
       <h2>Avant de partir — transports</h2>
@@ -696,7 +698,7 @@ POIS.forEach(p=>{
 /* ===== Coquille : carte redimensionnable/masquable en haut de page ===== */
 const app=document.getElementById('app');
 const mappane=document.getElementById('mappane');
-const topbarEl=document.querySelector('.topbar');
+const topwrapEl=document.querySelector('.topwrap');
 const gutter=document.getElementById('gutter');
 const toggleBtn=document.getElementById('toggleMap');
 const fab=document.getElementById('showMapFab');
@@ -771,10 +773,10 @@ gutter.addEventListener('dblclick', ()=>{
 
 // Masquer / afficher la carte
 toggleBtn.addEventListener('click', ()=> setHidden(!app.classList.contains('maphidden'), true));
-fab.addEventListener('click', ()=>{ setHidden(false, true); mappane.scrollIntoView({behavior:'smooth',block:'start'}); });
+fab.addEventListener('click', ()=>{ setHidden(false, true); window.scrollTo({top:0,behavior:'smooth'}); });
 
-// Hauteur de la topbar collante → offset de la barre de filtres et de l'ancrage des fiches
-function setTopH(){ document.documentElement.style.setProperty('--topH', topbarEl.offsetHeight+'px'); }
+// Hauteur de l'en-tête collant (titre + filtres) → offset d'ancrage des fiches
+function setTopH(){ document.documentElement.style.setProperty('--topH', topwrapEl.offsetHeight+'px'); }
 setTopH();
 window.addEventListener('resize', ()=>{ setTopH(); if(!raf) raf=requestAnimationFrame(()=>{ raf=0; refreshMap(); }); });
 
@@ -842,7 +844,7 @@ function showOnMap(id){
   // s'assurer que le marqueur est présent malgré le filtre courant
   if(!map.hasLayer(markers[id])) markers[id].addTo(map);
   // ramener la carte (en haut de page) dans la vue
-  mappane.scrollIntoView({behavior:'smooth',block:'start'});
+  window.scrollTo({top:0,behavior:'smooth'});
   const go=()=>{ map.invalidateSize({animate:false}); map.setView([p.lat,p.lng], Math.max(map.getZoom(),15)); markers[id].openPopup(); };
   setTimeout(go, wasHidden?180:150);
 }
@@ -854,8 +856,8 @@ document.addEventListener('click', e=>{
   else { map.closePopup(); jumpTo(id); }
 });
 
-// Application initiale des filtres (état mémorisé) + ajustement de la carte
-setTimeout(()=> applyFilters(), 60);
+// Recalcul de la hauteur de l'en-tête (après construction des filtres) + filtres + carte
+setTimeout(()=>{ setTopH(); applyFilters(); }, 60);
 </script>
 </body>
 </html>
