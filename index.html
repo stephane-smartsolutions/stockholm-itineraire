@@ -64,10 +64,13 @@
                box-shadow:0 3px 10px rgba(0,0,0,.25)}
   .showmap-fab[hidden]{display:none}
 
-  /* Barre de filtres : bloc normal DANS l'en-tête collant (plus de sticky propre → plus de glissement) */
-  .filterbar{background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;
-             padding:8px 28px 9px;border-bottom:1px solid var(--line);box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
-  .fbtn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
+  /* Barre de filtres : DANS l'en-tête collant, toujours UNE seule ligne (jamais d'enroulement).
+     Si trop étroit, défilement horizontal (barre masquée) plutôt que passage à la ligne. */
+  .filterbar{background:var(--bg);display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+             scrollbar-width:none;gap:6px;padding:8px 28px 9px;border-bottom:1px solid var(--line);
+             box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
+  .filterbar::-webkit-scrollbar{display:none}
+  .fbtn{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
         cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap}
   .fbtn:hover{border-color:var(--teal)}
   .fbtn.active{border-color:transparent;color:#fff}
@@ -167,10 +170,8 @@
     .card{grid-template-columns:52px 1fr}
     .tb-title{font-size:15px}
     .btn{padding:8px 13px}
-    /* Filtres : une seule ligne défilante horizontalement (compacte) */
-    .filterbar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:6px;padding:8px 16px 9px}
-    .filterbar::-webkit-scrollbar{display:none}
-    .fbtn{flex:0 0 auto}
+    /* Filtres : padding réduit sur mobile (le comportement une-ligne-défilante est déjà global) */
+    .filterbar{padding:8px 16px 9px}
   }
 
   /* Fiches en grille fluide : autant de colonnes que la largeur permet (chacune ≥ ~430px),
@@ -616,12 +617,12 @@
 <script>
 // theme: musee | palais | panorama | croisiere | resto | hotel ; rank = priorité globale (attractions) ; id = ancre
 const THEME_META = {
-  musee:{label:"Musées", icon:"🏛️", color:"#1f6f8b"},
-  palais:{label:"Palais & monuments", icon:"👑", color:"#8a4fbf"},
-  panorama:{label:"Quartiers & panoramas", icon:"🌆", color:"#2e8b57"},
-  croisiere:{label:"Croisières & bateaux", icon:"⛵", color:"#c8621b"},
-  resto:{label:"Restaurants", icon:"🍴", color:"#b3283b"},
-  hotel:{label:"Hôtel", icon:"🏨", color:"#1b3a5b"}
+  musee:{label:"Musées", short:"Musées", icon:"🏛️", color:"#1f6f8b"},
+  palais:{label:"Palais & monuments", short:"Palais", icon:"👑", color:"#8a4fbf"},
+  panorama:{label:"Quartiers & panoramas", short:"Panoramas", icon:"🌆", color:"#2e8b57"},
+  croisiere:{label:"Croisières & bateaux", short:"Croisières", icon:"⛵", color:"#c8621b"},
+  resto:{label:"Restaurants", short:"Restaurants", icon:"🍴", color:"#b3283b"},
+  hotel:{label:"Hôtel", short:"Hôtel", icon:"🏨", color:"#1b3a5b"}
 };
 const THEME_ORDER = ["musee","palais","panorama","croisiere","resto","hotel"];
 
@@ -814,8 +815,8 @@ function addFbtn(theme,label){
   b.addEventListener('click', ()=> theme==='all'?showAllThemes():toggleTheme(theme));
   filterbar.appendChild(b);
 }
-addFbtn('all','Tout afficher');
-THEME_ORDER.forEach(k=> addFbtn(k, THEME_META[k].icon+' '+THEME_META[k].label));
+addFbtn('all','Tout');
+THEME_ORDER.forEach(k=> addFbtn(k, THEME_META[k].icon+' '+THEME_META[k].short));
 
 // Légende de la carte (couleurs des thématiques)
 const legend=document.getElementById('maplegend');
