@@ -666,8 +666,30 @@ function iconHtml(p){
   return `<div class="pin ${p.theme}"><b></b><i>${p.rank}</i></div>`;
 }
 function badgeOf(p){ const m=THEME_META[p.theme]; return [p.theme, m.icon+" "+m.label]; }
+// Requête Google Maps propre par POI. Par défaut : nom sans parenthèses + ", Stockholm".
+// Surcharge (GQ) pour les lieux dont le nom n'est pas directement trouvable ; les croisières
+// (routes, pas des lieux nommés) utilisent les coordonnées du point de départ.
+const GQ = {
+  "kungliga-slottet":"Kungliga slottet, Stockholm",
+  "stadshuset":"Stockholms stadshus, Stockholm",
+  "tekniska":"Tekniska museet, Stockholm",
+  "viking-museum":"The Viking Museum, Stockholm",
+  "historiska":"Historiska museet, Stockholm",
+  "nationalmuseum":"Nationalmuseum, Stockholm",
+  "nordiska":"Nordiska museet, Stockholm",
+  "nobel-museum":"Nobel Prize Museum, Stockholm",
+  "skyview":"SkyView, Avicii Arena, Stockholm",
+  "gamla-stan-flanerie":"Gamla stan, Stockholm",
+  "monteliusvagen":"Monteliusvägen, Stockholm",
+  "riddarholmen":"Riddarholmskyrkan, Stockholm",
+  "canal-djurgarden":"59.3296,18.0790",
+  "bateau-drottningholm":"59.3263,18.0580",
+  "croisiere-ponts":"59.3266,18.0574",
+  "croisiere":"59.3252,18.0748"
+};
 function gmapsUrl(p){
-  return "https://www.google.com/maps/search/"+encodeURIComponent(p.name+" Stockholm")+"/@"+p.lat+","+p.lng+",16z";
+  const q = GQ[p.id] || (p.name.replace(/\s*\([^)]*\)/g,'').trim()+", Stockholm");
+  return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 }
 
 const map = L.map('map',{scrollWheelZoom:true});
