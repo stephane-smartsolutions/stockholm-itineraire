@@ -30,9 +30,9 @@
        border-radius:7px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
   .btn:hover{background:rgba(255,255,255,.27)}
 
-  /* Carte en haut, pleine largeur (centrée sur les grands écrans) */
+  /* Carte en haut, pleine largeur du viewport */
   .app{display:block}
-  .mappane{width:100%;max-width:1300px;margin:0 auto;height:var(--maph,46vh);display:flex;flex-direction:column;
+  .mappane{width:100%;height:var(--maph,46vh);display:flex;flex-direction:column;
            min-height:200px;background:#fff}
   #map{flex:1 1 auto;min-height:0;width:100%;z-index:0}
   .maplegend{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;
@@ -42,15 +42,17 @@
   .dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 auto}
 
   /* Poignée de redimensionnement (horizontale, sous la carte) */
-  .gutter{width:100%;max-width:1300px;margin:0 auto;height:18px;cursor:row-resize;background:var(--line);
+  .gutter{width:100%;height:18px;cursor:row-resize;background:var(--line);
           position:relative;touch-action:none;display:flex;align-items:center;justify-content:center}
   .gutter:hover,.gutter.dragging{background:var(--teal)}
   .gutter::before{content:"";width:46px;height:5px;border-radius:3px;background:rgba(0,0,0,.3)}
   .gutter:hover::before,.gutter.dragging::before{background:#fff}
 
-  /* Volet texte (flux normal de la page) */
+  /* Volet texte (flux normal de la page, pleine largeur du viewport) */
   .content{padding:0 28px 56px}
-  .content-inner{max-width:1300px;margin:0 auto}
+  .content-inner{max-width:none}
+  /* Prose : largeur de lecture confortable même sur très grand écran */
+  .pageintro,section.intro .lead,.note,footer,.themesub{max-width:70ch}
   .pageintro{color:#3f4f4e;font-size:14px;padding:16px 0 2px}
   .pageintro .k{white-space:nowrap}
 
@@ -170,12 +172,11 @@
     .fbtn{flex:0 0 auto}
   }
 
-  /* Écran large : fiches sur deux colonnes (masonry) pour utiliser la largeur — tout reste en scroll vertical */
-  @media (min-width:1000px){
-    .themeblock{column-count:2;column-gap:20px}
-    .themeblock > h2.theme,.themeblock > .themesub{column-span:all}
-    .themeblock .card{break-inside:avoid;margin:0 0 14px}
-  }
+  /* Fiches en colonnes fluides : autant de colonnes que la largeur du viewport permet
+     (chacune ≥ ~440px), donc pleinement adaptatif — 1 colonne sur mobile, N sur grand écran */
+  .themeblock{column-width:440px;column-gap:22px}
+  .themeblock > h2.theme,.themeblock > .themesub{column-span:all}
+  .themeblock .card{break-inside:avoid;margin:0 0 14px}
 </style>
 </head>
 <body>
