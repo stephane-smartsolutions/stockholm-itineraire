@@ -10,7 +10,7 @@
   :root{
     --bg:#f4f3ef; --ink:#1d2b2b; --muted:#6b7876; --line:#e2ddd4;
     --teal:#0e5a5e; --teal-dark:#0b4649;
-    --musee:#1f6f8b; --palais:#8a4fbf; --panorama:#2e8b57; --croisiere:#c8621b; --resto:#b3283b; --hotel:#1b3a5b;
+    --musee:#1f6f8b; --palais:#8a4fbf; --panorama:#2e8b57; --croisiere:#c8621b; --rooftop:#c04d86; --resto:#b3283b; --hotel:#1b3a5b;
     --card:#ffffff;
   }
   *{box-sizing:border-box}
@@ -81,6 +81,7 @@
   .themeblock[data-theme="palais"] h2.theme{color:var(--palais)}
   .themeblock[data-theme="panorama"] h2.theme{color:var(--panorama)}
   .themeblock[data-theme="croisiere"] h2.theme{color:var(--croisiere)}
+  .themeblock[data-theme="rooftop"] h2.theme{color:var(--rooftop)}
   .themeblock[data-theme="resto"] h2.theme{color:var(--resto)}
   .themeblock[data-theme="hotel"] h2.theme{color:var(--hotel)}
   .themesub{color:var(--muted);font-style:italic;margin:0 0 6px;font-size:14px}
@@ -92,6 +93,7 @@
         border-radius:8px;padding:14px 16px;margin:10px 0;display:grid;grid-template-columns:64px 1fr;gap:6px 14px;scroll-margin-top:calc(var(--topH,48px) + 12px)}
   .card.musee{border-left-color:var(--musee)} .card.palais{border-left-color:var(--palais)}
   .card.panorama{border-left-color:var(--panorama)} .card.croisiere{border-left-color:var(--croisiere)}
+  .card.rooftop{border-left-color:var(--rooftop)}
   .card.resto{border-left-color:var(--resto)} .card.hotel{border-left-color:var(--hotel)}
   .rankcell{display:flex;align-items:flex-start;justify-content:center;padding-top:2px}
   .rankno{width:42px;height:42px;border-radius:10px;color:#fff;font-weight:800;font-size:19px;line-height:1;
@@ -145,11 +147,13 @@
   .pin i.emo{font-size:13px}
   .pin.musee b{background:var(--musee)} .pin.palais b{background:var(--palais)}
   .pin.panorama b{background:var(--panorama)} .pin.croisiere b{background:var(--croisiere)}
+  .pin.rooftop b{background:var(--rooftop)}
   .pin.resto b{background:var(--resto)} .pin.hotel b{background:var(--hotel)}
   .leaflet-popup-content{margin:11px 13px;font-size:14px}
   .pop-badge{display:inline-block;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;margin-bottom:5px}
   .pop-badge.musee{background:var(--musee)} .pop-badge.palais{background:var(--palais)}
   .pop-badge.panorama{background:var(--panorama)} .pop-badge.croisiere{background:var(--croisiere)}
+  .pop-badge.rooftop{background:var(--rooftop)}
   .pop-badge.resto{background:var(--resto)} .pop-badge.hotel{background:var(--hotel)}
   .pop-title{font-weight:700;font-size:15px;margin-bottom:2px}
   .pop-desc{color:#5a6a68;font-size:12.5px;margin-bottom:8px}
@@ -460,6 +464,62 @@
       </div>
     </section>
 
+    <!-- ================= ROOFTOPS ================= -->
+    <section class="themeblock" data-theme="rooftop">
+      <h2 class="theme">🍸 Rooftops &amp; vues en hauteur</h2>
+      <p class="themesub">Bars et terrasses en toit-terrasse pour l'apéro d'altitude — vues panoramiques sur la ville et l'eau.</p>
+
+      <div class="card rooftop" id="himlen" data-poi="himlen" data-theme="rooftop">
+        <div class="rankcell"><span class="glyphcell">🍸</span></div>
+        <div class="body">
+          <div class="cardhead"><h4>Himlen — Skrapan</h4><span class="mapjump" data-goto="himlen">voir sur la carte</span></div>
+          <div class="meta"><span>Södermalm · Götgatan · 25e étage</span></div>
+          <p>Bar-restaurant panoramique au sommet de la tour Skrapan (25e étage), sur Götgatan à Södermalm : baies vitrées du sol au plafond, l'adresse la plus vertigineuse de la ville. Ouvert toute l'année.</p>
+          <div class="links"><a href="https://himlen.se/" target="_blank" rel="noopener">Site officiel</a><a href="https://fr.wikipedia.org/wiki/Södermalm" target="_blank" rel="noopener">Södermalm (Wikipédia)</a></div>
+        </div>
+      </div>
+
+      <div class="card rooftop" id="gondolen" data-poi="gondolen" data-theme="rooftop">
+        <div class="rankcell"><span class="glyphcell">🍸</span></div>
+        <div class="body">
+          <div class="cardhead"><h4>Le Gondolen — Slussen</h4><span class="mapjump" data-goto="gondolen">voir sur la carte</span></div>
+          <div class="meta"><span>Slussen · 38 m de haut</span></div>
+          <p>Restaurant et bar suspendus à 38 m au-dessus de Slussen, accrochés à l'ancien ascenseur Katarina : vue plongeante sur Gamla Stan, le lac Mälar et la Baltique. Coucher de soleil spectaculaire.</p>
+          <div class="links"><a href="https://gondolen.se/" target="_blank" rel="noopener">Site officiel</a><a href="https://fr.wikipedia.org/wiki/Södermalm" target="_blank" rel="noopener">Södermalm (Wikipédia)</a></div>
+        </div>
+      </div>
+
+      <div class="card rooftop" id="rooftop-garden" data-poi="rooftop-garden" data-theme="rooftop">
+        <div class="rankcell"><span class="glyphcell">🍸</span></div>
+        <div class="body">
+          <div class="cardhead"><h4>Rooftop Garden — Clarion Hotel Sign</h4><span class="mapjump" data-goto="rooftop-garden">voir sur la carte</span></div>
+          <div class="meta"><span>Norrmalm · piscine &amp; orangerie</span></div>
+          <p>Sur le toit du Clarion Hotel Sign (Norrmalm) : bar-orangerie, piscine chauffée avec vue sur Kungsholmen et le spa Selma City — un paradis bien caché en plein centre.</p>
+          <div class="links"><a href="https://www.strawberry.se/hotell/sverige/stockholm/clarion-hotel-sign" target="_blank" rel="noopener">Clarion Hotel Sign</a><a href="https://fr.wikipedia.org/wiki/Norrmalm" target="_blank" rel="noopener">Norrmalm (Wikipédia)</a></div>
+        </div>
+      </div>
+
+      <div class="card rooftop" id="urban-deli" data-poi="urban-deli" data-theme="rooftop">
+        <div class="rankcell"><span class="glyphcell">🍸</span></div>
+        <div class="body">
+          <div class="cardhead"><h4>Urban Deli — jardin sur le toit</h4><span class="mapjump" data-goto="urban-deli">voir sur la carte</span></div>
+          <div class="meta"><span>Norrmalm · Sveavägen · vue 360°</span></div>
+          <p>Jardin sur le toit d'un immeuble de 9 étages à Sveavägen (Norrmalm) : terrasse en bois, plantations et coins détente, vue à 360° au coucher du soleil. Épicerie fine et restaurant en dessous.</p>
+          <div class="links"><a href="https://urbandeli.se/" target="_blank" rel="noopener">Site officiel</a><a href="https://fr.wikipedia.org/wiki/Norrmalm" target="_blank" rel="noopener">Norrmalm (Wikipédia)</a></div>
+        </div>
+      </div>
+
+      <div class="card rooftop" id="barrio-rooftop" data-poi="barrio-rooftop" data-theme="rooftop">
+        <div class="rankcell"><span class="glyphcell">🍸</span></div>
+        <div class="body">
+          <div class="cardhead"><h4>Bar Barrio — Högalid</h4><span class="mapjump" data-goto="barrio-rooftop">voir sur la carte</span></div>
+          <div class="meta"><span>Södermalm · près du parc de Högalid</span></div>
+          <p>Rooftop bohème de l'ouest de Södermalm, près du parc de Högalid : déco vintage, panneaux de bois et plantes, ambiance intime avec vue sur le port. Vérifiez l'ouverture avant de vous déplacer.</p>
+          <div class="links"><a href="https://fr.wikipedia.org/wiki/Södermalm" target="_blank" rel="noopener">Södermalm (Wikipédia)</a></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ================= RESTAURANTS ================= -->
     <section class="themeblock" data-theme="resto">
       <h2 class="theme">🍴 Restaurants</h2>
@@ -615,10 +675,11 @@ const THEME_META = {
   palais:{label:"Palais & monuments", icon:"👑", color:"#8a4fbf"},
   panorama:{label:"Quartiers & panoramas", icon:"🌆", color:"#2e8b57"},
   croisiere:{label:"Croisières & bateaux", icon:"⛵", color:"#c8621b"},
+  rooftop:{label:"Rooftops & vues en hauteur", icon:"🍸", color:"#c04d86"},
   resto:{label:"Restaurants", icon:"🍴", color:"#b3283b"},
   hotel:{label:"Hôtel", icon:"🏨", color:"#1b3a5b"}
 };
-const THEME_ORDER = ["musee","palais","panorama","croisiere","resto","hotel"];
+const THEME_ORDER = ["musee","palais","panorama","croisiere","rooftop","resto","hotel"];
 
 const POIS = [
   // Attractions classées (rank = priorité globale)
@@ -644,6 +705,12 @@ const POIS = [
   {id:"croisiere",theme:"croisiere",rank:20,lat:59.3252,lng:18.0748,name:"Croisière coucher de soleil (archipel)",desc:"N°20 · ⛵ Croisières & bateaux · Skeppsbron"},
   {id:"canal-djurgarden",theme:"croisiere",rank:21,lat:59.3296,lng:18.0790,name:"Excursion canal royal Djurgården (1h)",desc:"N°21 · ⛵ Croisières & bateaux"},
   {id:"bateau-drottningholm",theme:"croisiere",rank:22,lat:59.3263,lng:18.0580,name:"Bateau A-R Drottningholm (1h)",desc:"N°22 · ⛵ Croisières & bateaux · Lovön"},
+  // Rooftops (non classés)
+  {id:"himlen",theme:"rooftop",lat:59.3119,lng:18.0740,name:"Himlen",desc:"🍸 Rooftop · Södermalm · Skrapan (25e étage)"},
+  {id:"gondolen",theme:"rooftop",lat:59.3196,lng:18.0732,name:"Le Gondolen",desc:"🍸 Rooftop · Slussen · 38 m au-dessus de la ville"},
+  {id:"rooftop-garden",theme:"rooftop",lat:59.3348,lng:18.0532,name:"Rooftop Garden (Clarion Hotel Sign)",desc:"🍸 Rooftop · Norrmalm · piscine & orangerie"},
+  {id:"urban-deli",theme:"rooftop",lat:59.3368,lng:18.0628,name:"Urban Deli (rooftop)",desc:"🍸 Rooftop · Norrmalm · jardin sur le toit"},
+  {id:"barrio-rooftop",theme:"rooftop",lat:59.3168,lng:18.0335,name:"Bar Barrio",desc:"🍸 Rooftop · Södermalm · Högalid"},
   // Restaurants (non classés)
   {id:"freden",theme:"resto",lat:59.3228,lng:18.0728,name:"Den Gyldene Freden",desc:"🍴 Restaurant · Gamla Stan · husmanskost (1722)"},
   {id:"ulla-winbladh",theme:"resto",lat:59.3270,lng:18.0958,name:"Ulla Winbladh",desc:"🍴 Restaurant · Djurgården · cuisine suédoise"},
@@ -663,6 +730,7 @@ const POIS = [
 function iconHtml(p){
   if(p.theme==="hotel") return '<div class="pin hotel"><b></b><i class="emo">🏨</i></div>';
   if(p.theme==="resto") return '<div class="pin resto"><b></b><i class="emo">🍴</i></div>';
+  if(p.theme==="rooftop") return '<div class="pin rooftop"><b></b><i class="emo">🍸</i></div>';
   return `<div class="pin ${p.theme}"><b></b><i>${p.rank}</i></div>`;
 }
 function badgeOf(p){ const m=THEME_META[p.theme]; return [p.theme, m.icon+" "+m.label]; }
@@ -685,7 +753,12 @@ const GQ = {
   "canal-djurgarden":"59.3296,18.0790",
   "bateau-drottningholm":"59.3263,18.0580",
   "croisiere-ponts":"59.3266,18.0574",
-  "croisiere":"59.3252,18.0748"
+  "croisiere":"59.3252,18.0748",
+  "urban-deli":"Urban Deli Sveavägen, Stockholm",
+  "himlen":"Himlen Skrapan, Stockholm",
+  "rooftop-garden":"Clarion Hotel Sign, Stockholm",
+  "barrio-rooftop":"59.3168,18.0335",
+  "gondolen":"Gondolen, Stockholm"
 };
 function gmapsUrl(p){
   const q = GQ[p.id] || (p.name.replace(/\s*\([^)]*\)/g,'').trim()+", Stockholm");
@@ -719,15 +792,17 @@ const topbarEl=document.querySelector('.topbar');
 const gutter=document.getElementById('gutter');
 const toggleBtn=document.getElementById('toggleMap');
 const fab=document.getElementById('showMapFab');
-const LS={mw:'sthlm.mapw', mh:'sthlm.maph', hid:'sthlm.mapHidden', flt:'sthlm.filter'};
+const LS={mw:'sthlm.mapw', mh:'sthlm.maph', hid:'sthlm.mapHidden', flt:'sthlm.hidden'};
 
-// Thématiques actives (multi-sélection). Restaurées depuis localStorage ; toutes par défaut.
+// Thématiques actives (multi-sélection). On mémorise les thèmes MASQUÉS (complément),
+// pour qu'une nouvelle catégorie ajoutée plus tard soit visible par défaut chez tout le monde.
 let activeThemes;
 try{
-  const f=JSON.parse(localStorage.getItem(LS.flt)||'null');
-  activeThemes=(Array.isArray(f)&&f.length)?new Set(f.filter(k=>THEME_META[k])):new Set(THEME_ORDER);
-  if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
+  const hidden=JSON.parse(localStorage.getItem(LS.flt)||'[]');
+  const hs=Array.isArray(hidden)?new Set(hidden):new Set();
+  activeThemes=new Set(THEME_ORDER.filter(k=>!hs.has(k)));
 }catch(_){ activeThemes=new Set(THEME_ORDER); }
+if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
 
 function isColumn(){ return window.matchMedia('(max-width:820px)').matches; }
 function refreshMap(){ map.invalidateSize({animate:false}); }
@@ -819,7 +894,7 @@ function applyFilters(){
     btn.classList.toggle('active', active);
     btn.style.background = active ? (t==='all'?'var(--teal)':THEME_META[t].color) : '';
   });
-  try{ localStorage.setItem(LS.flt, JSON.stringify([...activeThemes])); }catch(_){}
+  try{ localStorage.setItem(LS.flt, JSON.stringify(THEME_ORDER.filter(k=>!activeThemes.has(k)))); }catch(_){}
   fitVisible();
 }
 function toggleTheme(t){ if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t); applyFilters(); }
