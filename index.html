@@ -207,8 +207,9 @@
 
     <div class="pageintro">Tous les points d'intérêt sont <strong>classés par priorité</strong> selon un score de consensus touristique
       (le numéro = le rang, <span class="k">N°1 = incontournable absolu</span>) et <strong>regroupés par thématique</strong>.
-      Utilisez les <strong>boutons de filtre</strong> pour n'afficher qu'une thématique — sur la carte comme dans le texte.
-      Cliquez un marqueur pour rejoindre sa fiche ; 🍴 = restaurant, 🏨 = hôtel.</div>
+      Cliquez un <strong>bouton de filtre</strong> pour n'afficher que cette thématique — sur la carte comme dans le texte
+      (<span class="k">Cmd/Ctrl-clic</span> pour en combiner plusieurs, « Tout afficher » pour tout revoir).
+      Cliquez un marqueur pour rejoindre sa fiche ; 🍸 = rooftop, 🍴 = restaurant, 🏨 = hôtel.</div>
 
     <section class="intro">
       <h2>Avant de partir — transports</h2>
@@ -897,13 +898,26 @@ function applyFilters(){
   try{ localStorage.setItem(LS.flt, JSON.stringify(THEME_ORDER.filter(k=>!activeThemes.has(k)))); }catch(_){}
   fitVisible();
 }
-function toggleTheme(t){ if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t); applyFilters(); }
+function selectTheme(t, e){
+  if(e && (e.metaKey||e.ctrlKey||e.shiftKey)){
+    // Cmd/Ctrl/Shift-clic : multi-sélection (ajouter/retirer)
+    if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t);
+    if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
+  } else if(activeThemes.size===1 && activeThemes.has(t)){
+    // clic sur la thématique déjà seule affichée → tout réafficher
+    activeThemes=new Set(THEME_ORDER);
+  } else {
+    // clic simple : isoler cette thématique (désélectionne toutes les autres)
+    activeThemes=new Set([t]);
+  }
+  applyFilters();
+}
 function showAllThemes(){ activeThemes=new Set(THEME_ORDER); applyFilters(); }
 function addFbtn(theme,label){
   const b=document.createElement('button');
   b.className='fbtn'; b.dataset.theme=theme;
   b.innerHTML=(theme==='all'?'':`<span class="fdot" style="background:${THEME_META[theme].color}"></span>`)+label;
-  b.addEventListener('click', ()=> theme==='all'?showAllThemes():toggleTheme(theme));
+  b.addEventListener('click', (e)=> theme==='all'?showAllThemes():selectTheme(theme,e));
   filterbar.appendChild(b);
 }
 addFbtn('all','Tout afficher');
