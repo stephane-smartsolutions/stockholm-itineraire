@@ -915,17 +915,22 @@ function addFbtn(theme,label){
   b.innerHTML=(theme==='all'?'':`<span class="fdot" style="background:${THEME_META[theme].color}"></span>`)+label;
   if(theme==='all'){
     b.addEventListener('click', showAllThemes);
-  } else {
-    let t=null; // anti-rebond : un double-clic ne doit pas déclencher le simple clic
-    b.addEventListener('click', ()=>{
-      if(t) return;                 // 2e clic d'un double-clic → ignoré
-      t=setTimeout(()=>{ t=null; toggleTheme(theme); }, 220);
-    });
-    b.addEventListener('dblclick', ()=>{
-      if(t){ clearTimeout(t); t=null; }
-      isolateTheme(theme);
-    });
+    filterbar.appendChild(b);
+    return;
   }
+  // Détection maison du double-clic (deux clics dans une fenêtre de 320 ms), indépendante
+  // de l'événement dblclick du navigateur (peu fiable au trackpad / double-clic lent).
+  let clickTimer=null;
+  b.addEventListener('click', ()=>{
+    if(clickTimer){                                  // 2e clic rapproché = double-clic → isoler
+      clearTimeout(clickTimer); clickTimer=null;
+      isolateTheme(theme);
+    } else {                                         // 1er clic : attendre un éventuel 2e, sinon basculer
+      clickTimer=setTimeout(()=>{ clickTimer=null; toggleTheme(theme); }, 320);
+    }
+  });
+  // filet de sécurité : double-clic reconnu par l'OS au-delà de la fenêtre
+  b.addEventListener('dblclick', ()=>{ if(clickTimer){ clearTimeout(clickTimer); clickTimer=null; } isolateTheme(theme); });
   filterbar.appendChild(b);
 }
 addFbtn('all','Tout afficher');
