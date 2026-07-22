@@ -67,7 +67,8 @@
      comme les fiches. S'adapte à n'importe quel nombre de boutons, tous toujours visibles. */
   .filterbar{background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;padding:9px 28px;border-bottom:1px solid var(--line)}
   .fbtn{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;
-        cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap}
+        cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);transition:.12s;white-space:nowrap;
+        touch-action:manipulation;user-select:none;-webkit-user-select:none}
   .fbtn:hover{border-color:var(--teal)}
   .fbtn.active{border-color:transparent;color:#fff}
   .fdot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
@@ -207,8 +208,8 @@
 
     <div class="pageintro">Tous les points d'intérêt sont <strong>classés par priorité</strong> selon un score de consensus touristique
       (le numéro = le rang, <span class="k">N°1 = incontournable absolu</span>) et <strong>regroupés par thématique</strong>.
-      Cliquez un <strong>bouton de filtre</strong> pour n'afficher que cette thématique — sur la carte comme dans le texte
-      (<span class="k">Cmd/Ctrl-clic</span> pour en combiner plusieurs, « Tout afficher » pour tout revoir).
+      <strong>Simple clic</strong> sur un bouton de filtre = afficher/masquer sa thématique ;
+      <strong>double-clic</strong> = n'afficher que celle-ci ; « Tout afficher » = tout revoir — sur la carte comme dans le texte.
       Cliquez un marqueur pour rejoindre sa fiche ; 🍸 = rooftop, 🍴 = restaurant, 🏨 = hôtel.</div>
 
     <section class="intro">
@@ -898,26 +899,33 @@ function applyFilters(){
   try{ localStorage.setItem(LS.flt, JSON.stringify(THEME_ORDER.filter(k=>!activeThemes.has(k)))); }catch(_){}
   fitVisible();
 }
-function selectTheme(t, e){
-  if(e && (e.metaKey||e.ctrlKey||e.shiftKey)){
-    // Cmd/Ctrl/Shift-clic : multi-sélection (ajouter/retirer)
-    if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t);
-    if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
-  } else if(activeThemes.size===1 && activeThemes.has(t)){
-    // clic sur la thématique déjà seule affichée → tout réafficher
-    activeThemes=new Set(THEME_ORDER);
-  } else {
-    // clic simple : isoler cette thématique (désélectionne toutes les autres)
-    activeThemes=new Set([t]);
-  }
+function toggleTheme(t){
+  // simple clic : afficher / masquer cette thématique (multi-sélection)
+  if(activeThemes.has(t)) activeThemes.delete(t); else activeThemes.add(t);
+  if(!activeThemes.size) activeThemes=new Set(THEME_ORDER);
   applyFilters();
+}
+function isolateTheme(t){ // double-clic : n'afficher que cette thématique
+  activeThemes=new Set([t]); applyFilters();
 }
 function showAllThemes(){ activeThemes=new Set(THEME_ORDER); applyFilters(); }
 function addFbtn(theme,label){
   const b=document.createElement('button');
   b.className='fbtn'; b.dataset.theme=theme;
   b.innerHTML=(theme==='all'?'':`<span class="fdot" style="background:${THEME_META[theme].color}"></span>`)+label;
-  b.addEventListener('click', (e)=> theme==='all'?showAllThemes():selectTheme(theme,e));
+  if(theme==='all'){
+    b.addEventListener('click', showAllThemes);
+  } else {
+    let t=null; // anti-rebond : un double-clic ne doit pas déclencher le simple clic
+    b.addEventListener('click', ()=>{
+      if(t) return;                 // 2e clic d'un double-clic → ignoré
+      t=setTimeout(()=>{ t=null; toggleTheme(theme); }, 220);
+    });
+    b.addEventListener('dblclick', ()=>{
+      if(t){ clearTimeout(t); t=null; }
+      isolateTheme(theme);
+    });
+  }
   filterbar.appendChild(b);
 }
 addFbtn('all','Tout afficher');
